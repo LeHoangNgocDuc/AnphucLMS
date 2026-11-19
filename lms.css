@@ -1,0 +1,114 @@
+/* An Phuc LMS V1.2 - scoped additions: no legacy selectors/handlers changed */
+#role-landing .role-card-grid{max-width:1150px;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+#role-landing .role-card{min-width:0;min-height:310px}
+#role-landing .role-card.student:before{background:linear-gradient(90deg,#0e8e91,#38b9c2)}
+#role-landing .role-card.student .role-icon{background:#e6f8f9;color:#087b80;background-image:none;display:flex;align-items:center;justify-content:center}
+#role-landing .role-card.student .role-icon i{display:block;font-size:32px}
+#role-landing .role-card.student .role-audience{color:#047780;background:#edfafa;border-color:#c6eaeb}
+#role-landing .role-card.student .role-entry-btn{background:#087b80;color:#fff;border:1px solid #087b80}
+#role-landing .role-card.student:hover .role-entry-btn{background:#05656a}
+#role-landing .role-card{box-shadow:0 14px 36px rgba(13,49,90,.06);border-radius:23px}
+#role-landing .role-brand h1{letter-spacing:-.6px}
+@media(max-width:850px){#role-landing .role-card-grid{max-width:580px;grid-template-columns:1fr;gap:13px}#role-landing .role-card{min-height:0}}
+@media(max-width:768px){#role-landing .role-card.student .role-icon i{font-size:26px}#role-landing .role-card{min-height:0}}
+#ap-lms-app{--lms-ink:#153257;--lms-muted:#63778d;--lms-stroke:#dae5f1;--lms-teal:#087c79;--lms-blue:#165ca8;min-height:100dvh;background:radial-gradient(ellipse 60% 48% at 2% 0%,#e6f0ff,transparent 75%),linear-gradient(150deg,#f5f9ff,#f4f9f9)}
+#ap-lms-app [hidden]{display:none!important}
+#ap-lms-app .lms-container{max-width:1130px;margin:auto;padding:23px 20px 54px}
+#ap-lms-app .lms-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:80px;background:#fff;border:1px solid var(--lms-stroke);border-radius:21px;padding:12px 19px;box-shadow:0 10px 32px rgba(17,61,116,.055)}
+#ap-lms-app .lms-brand{display:flex;gap:12px;align-items:center;min-width:0}
+#ap-lms-app .lms-brand img{width:58px;height:58px;object-fit:contain;border:1px solid #e1e9f2;border-radius:15px;padding:4px}
+#ap-lms-app h1{font-size:clamp(16px,2.3vw,22px);color:#0b315f;line-height:1.3;margin:0;font-weight:850}
+#ap-lms-app .lms-brand p{font-size:11px;font-weight:700;color:#087b67;margin:4px 0 0}
+#ap-lms-app .lms-bar-actions{display:flex;gap:8px;flex-wrap:wrap}
+#ap-lms-app button{cursor:pointer;transition:background-color .15s,border-color .15s,box-shadow .15s,transform .15s;font-weight:700}
+#ap-lms-app button:disabled{cursor:not-allowed;opacity:.52}
+#ap-lms-app .lms-btn{min-height:43px;padding:9px 15px;background:#0d467e;border:1px solid #0d467e;color:#fff;border-radius:12px;display:inline-flex;justify-content:center;align-items:center;gap:8px}
+#ap-lms-app .lms-btn:hover:not(:disabled){background:#083661}
+#ap-lms-app .lms-btn.ghost{background:#fff;color:#174878;border:1px solid #cadced}
+#ap-lms-app .lms-btn.ghost:hover:not(:disabled){background:#eef6ff}
+#ap-lms-app .lms-btn.teal{background:#087b72;border-color:#087b72}
+#ap-lms-app .lms-btn.teal:hover:not(:disabled){background:#066259}
+#ap-lms-app .lms-card{margin:19px 0 0;padding:25px;border:1px solid var(--lms-stroke);border-radius:22px;background:#fff;box-shadow:0 12px 34px rgba(10,53,98,.055)}
+#ap-lms-app .lms-login{width:min(555px,100%);margin:35px auto 0}
+#ap-lms-app .lms-hero{display:flex;gap:15px;align-items:center;margin-bottom:20px}
+#ap-lms-app .lms-hero-icon{width:57px;height:57px;display:flex;align-items:center;justify-content:center;font-size:25px;border-radius:17px;background:#e6f6f5;color:#087b72;flex:none}
+#ap-lms-app h2{font-size:20px;color:var(--lms-ink);margin:0;font-weight:850}
+#ap-lms-app h3{color:var(--lms-ink);font-size:16px;margin:0 0 8px}
+#ap-lms-app p{margin:5px 0;color:var(--lms-muted);font-size:13px;line-height:1.65}
+#ap-lms-app label{display:block;color:#354e6b;font-size:12px;font-weight:800;margin:15px 0 6px}
+#ap-lms-app input,#ap-lms-app select{width:100%;height:47px;padding:0 12px;border:1px solid #d6e1ed;border-radius:11px;background:#fff;color:#183b5b;font-size:15px}
+#ap-lms-app input:focus,#ap-lms-app select:focus{outline:2px solid #a9cef2;outline-offset:1px}
+#ap-lms-app .lms-candidates{display:grid;gap:6px;margin-top:9px;max-height:280px;overflow-y:auto}
+#ap-lms-app .lms-candidate{border:1px solid #e1eaf2;border-radius:11px;background:#f7faff;color:#163f6b;padding:11px 12px;text-align:left;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+#ap-lms-app .lms-candidate:hover{background:#eaf4ff;border-color:#b8d4ed}
+#ap-lms-app .lms-candidate.selected{background:#e4f7f0;border-color:#78cdb8}
+#ap-lms-app .lms-note{font-size:12px;color:#64748b;padding:11px 12px;background:#f8fbff;border-radius:11px;border:1px solid #e3ebf4;line-height:1.6}
+#ap-lms-app .lms-error{font-size:12px;color:#991b1b;background:#fff1f2;border:1px solid #fecdd3;border-radius:10px;padding:10px 12px;margin-top:12px}
+#ap-lms-app .lms-title-row{display:flex;gap:14px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:25px 0 13px}
+#ap-lms-app .lms-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0 23px}
+#ap-lms-app .lms-metric{padding:17px;border:1px solid #dfe8f1;border-radius:17px;background:#fff}
+#ap-lms-app .lms-metric strong{display:block;font-size:28px;font-weight:850;color:var(--lms-ink)}
+#ap-lms-app .lms-metric span{font-size:11px;font-weight:750;color:#64748b}
+#ap-lms-app .lms-metric:nth-child(1) strong{color:#c05c21}
+#ap-lms-app .lms-metric:nth-child(2) strong{color:#087b72}
+#ap-lms-app .lms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:13px}
+#ap-lms-app .lms-assignment{border:1px solid #dce6ef;background:white;border-radius:18px;padding:17px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 18px rgba(10,53,98,.045)}
+#ap-lms-app .lms-assignment h3{font-size:16px;margin:0}
+#ap-lms-app .lms-pill{display:inline-flex;align-items:center;gap:5px;border-radius:50px;padding:5px 9px;background:#e8f6f3;color:#0a756b;font-size:11px;font-weight:800}
+#ap-lms-app .lms-pill.warn{background:#fff2e3;color:#9d5b1c}
+#ap-lms-app .lms-levels{display:flex;gap:6px}
+#ap-lms-app .lms-levels span{flex:1;text-align:center;border-radius:9px;padding:7px 4px;border:1px solid #e2e8f0;background:#f8fafc;font-size:11px;color:#64748b}
+#ap-lms-app .lms-levels span.passed{background:#ecfdf5;border-color:#a7e7d0;color:#06785b;font-weight:800}
+#ap-lms-app .lms-levels span.next{background:#eaf2ff;border-color:#a9cafa;color:#155ba4;font-weight:800}
+#ap-lms-app .lms-answer-grid{display:grid;gap:10px;margin:20px 0}
+#ap-lms-app .lms-answer{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #dae4ef;border-radius:14px;padding:14px;min-height:60px;text-align:left;color:#23405f;font-size:14px;line-height:1.6;white-space:normal;width:100%}
+#ap-lms-app .lms-answer b{display:flex;align-items:center;justify-content:center;width:28px;height:28px;flex:none;border:1px solid #cbd5e1;border-radius:9px;color:#1d4f88;background:#f3f8ff}
+#ap-lms-app .lms-answer.selected{background:#eaf6f3;border-color:#52b6a1;box-shadow:0 0 0 2px rgba(8,123,114,.12)}
+#ap-lms-app .lms-answer.selected b{background:#087b72;color:white;border-color:#087b72}
+#ap-lms-app .lms-progress-track{height:9px;border-radius:99px;background:#edf1f6;overflow:hidden;margin:9px 0 13px}
+#ap-lms-app .lms-progress-bar{height:100%;background:#087b72;border-radius:99px}
+#ap-lms-app .lms-quiz-nav{display:flex;flex-wrap:wrap;gap:7px}
+#ap-lms-app .lms-quiz-nav button{width:36px;height:36px;border-radius:9px;border:1px solid #d7e2ef;color:#315170;background:#fff}
+#ap-lms-app .lms-quiz-nav button.done{background:#e5f6ee;border-color:#8ed1af;color:#075f47}
+#ap-lms-app .lms-quiz-nav button.current{background:#154f8d;color:#fff;border-color:#154f8d}
+#ap-lms-app .lms-quiz-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:18px}
+#ap-lms-app .lms-quiz-controls .lms-btn{min-width:130px}
+#ap-lms-app .lms-question{font-size:clamp(15px,2vw,18px);font-weight:700;color:#183552;line-height:1.9;overflow-wrap:anywhere}
+#ap-lms-app .lms-review-entry{border:1px solid #e2e8f0;background:#f8fbfe;border-radius:12px;padding:11px;margin-top:8px;font-size:12px;line-height:1.7;color:#475569}
+#ap-lms-app .lms-review-entry b{color:#0a756b}
+#ap-lms-app .lms-empty{padding:30px;text-align:center;background:#fff;border:1px dashed #cbd5e1;border-radius:17px}
+#ap-lms-app .lms-actions-inline{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#ap-lms-app .lms-spinner{padding:20px;text-align:center;color:#64748b;font-size:13px}
+#ap-lms-app .lms-math{overflow-wrap:anywhere}
+#ap-lms-app .lms-math a{overflow-wrap:anywhere}
+#ap-lms-app .lms-help{font-size:12px;line-height:1.6;color:#526781}
+/* Teacher dashboard LMS module: isolated to #ap-lms-admin */
+#ap-lms-admin{--lms-admin-bg:#f7faff;--lms-admin-line:#d9e6f3;display:grid;gap:16px}
+#ap-lms-admin .lms-admin-header{border-radius:18px;padding:20px;background:linear-gradient(115deg,#10345f,#0b6e78);color:#fff}
+#ap-lms-admin .lms-admin-header h2{font-size:21px;margin:0;color:#fff}
+#ap-lms-admin .lms-admin-header p{color:#d8f1f0;font-size:12px;margin:7px 0 0}
+#ap-lms-admin .lms-admin-section{padding:17px;background:white;border:1px solid var(--lms-admin-line);border-radius:17px}
+#ap-lms-admin h3{font-size:16px;color:#17395f;margin:0 0 10px}
+#ap-lms-admin .lms-admin-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+#ap-lms-admin label{display:flex;flex-direction:column;gap:5px;color:#485d71;font-size:11.5px;font-weight:750}
+#ap-lms-admin input,#ap-lms-admin select,#ap-lms-admin textarea{width:100%;min-height:43px;padding:9px 10px;border:1px solid #d1deeb;border-radius:10px;background:#fff;color:#143657;font:inherit;font-size:13px}
+#ap-lms-admin textarea{resize:vertical;min-height:72px;line-height:1.6}
+#ap-lms-admin button{font:inherit;font-size:12px;font-weight:750;border-radius:10px;min-height:41px;padding:8px 13px;cursor:pointer}
+#ap-lms-admin .lms-admin-btn{background:#12538b;color:#fff;border:1px solid #12538b;display:inline-flex;align-items:center;gap:7px}
+#ap-lms-admin .lms-admin-btn.alt{background:#ecf6ff;color:#10538c;border-color:#bfdaed}
+#ap-lms-admin .lms-admin-btn.green{background:#087c6b;border-color:#087c6b}
+#ap-lms-admin .lms-admin-btn:disabled{opacity:.55}
+#ap-lms-admin .lms-admin-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 0}
+#ap-lms-admin .lms-admin-status{font-size:12px;line-height:1.7;color:#53687e;white-space:pre-wrap}
+#ap-lms-admin .lms-admin-tablewrap{width:100%;overflow-x:auto;margin:8px 0}
+#ap-lms-admin table{width:100%;min-width:620px;border-collapse:collapse;font-size:12px}
+#ap-lms-admin th,#ap-lms-admin td{padding:10px;text-align:left;border-bottom:1px solid #e1e8f0;vertical-align:top}
+#ap-lms-admin th{background:#eef5fb;color:#21456b;font-size:11px}
+#ap-lms-admin .lms-idlist{display:grid;gap:7px;margin-top:8px;max-height:280px;overflow:auto}
+#ap-lms-admin .lms-idrow{display:flex;gap:8px;align-items:center;border:1px solid #dce8f3;border-radius:10px;padding:7px 8px;background:#fbfdff;font-size:12px}
+#ap-lms-admin .lms-idrow strong{font-size:11px;white-space:nowrap}
+#ap-lms-admin .lms-idrow button{margin-left:auto;flex:none;min-height:33px;padding:6px 9px}
+#ap-lms-admin .lms-note{background:#fff8ed;color:#7d521b;padding:10px 12px;font-size:12px;border:1px solid #fde8c0;border-radius:10px;line-height:1.6}
+#ap-lms-admin .lms-admin-progress{width:100%;height:9px;border-radius:99px;overflow:hidden;background:#e4edf5;margin:10px 0}
+#ap-lms-admin .lms-admin-progress i{display:block;background:#0d8074;height:100%;transition:width .2s}
+@media(max-width:680px){#ap-lms-app .lms-container{padding:8px 10px 28px}#ap-lms-app .lms-topbar{border-radius:13px;min-height:64px;padding:9px}#ap-lms-app .lms-brand img{width:43px;height:43px}#ap-lms-app h1{font-size:13px}#ap-lms-app .lms-brand p{font-size:10px}#ap-lms-app .lms-topbar .lms-btn{min-height:37px;font-size:11px;padding:7px 9px}#ap-lms-app .lms-card{padding:15px;border-radius:15px}#ap-lms-app .lms-metrics{gap:7px}#ap-lms-app .lms-metric{padding:10px}#ap-lms-app .lms-metric strong{font-size:21px}#ap-lms-app .lms-metric span{font-size:10px}#ap-lms-app .lms-grid{grid-template-columns:1fr}#ap-lms-app .lms-answer{font-size:13px;padding:12px}#ap-lms-app .lms-login{margin:20px auto 0}#ap-lms-app .lms-quiz-controls .lms-btn{min-width:auto}}
