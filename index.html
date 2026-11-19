@@ -1742,7 +1742,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
         </div>
         <div class="lms-admin-section"><h3>2. Nạp ngân hàng câu hỏi trắc nghiệm từ Excel</h3>
           <div class="lms-note">Hỗ trợ tệp .xlsx với sheet LMS_Questions, ToanTHCS, ToanTHPT, QuestionBank. Tự quy về ID duy nhất, giữ câu cần rà soát, không xóa bản gốc. Với ngân hàng 4.000 câu ban đầu, nhanh hơn nếu tải tệp chuẩn hóa trực tiếp lên Google Drive rồi kết nối ở bước 1.</div>
-          <div class="lms-admin-toolbar"><input type="file" id="ap-lms-import-file" accept=".xlsx,.xls" onchange="apLmsImportExcel(event)" aria-label="Chọn tệp Excel ngân hàng câu hỏi"><button class="lms-admin-btn alt" onclick="apLmsDeduplicate()"><i class="bi bi-intersect"></i> Quét trùng và xung đột</button></div>
+          <div class="lms-admin-toolbar"><input type="file" id="ap-lms-import-file" accept=".xlsx,.xls" onchange="apLmsImportExcel(event)" aria-label="Chọn tệp Excel ngân hàng câu hỏi"><button class="lms-admin-btn alt" onclick="apLmsResumeImport()"><i class="bi bi-arrow-clockwise"></i> Tiếp tục nạp dở dang</button><button class="lms-admin-btn alt" onclick="apLmsDeduplicate()"><i class="bi bi-intersect"></i> Quét trùng và xung đột</button></div>
           <div class="lms-admin-progress"><i id="ap-lms-import-bar" style="width:0%"></i></div>
           <p class="mini-note">Câu trùng nội dung + đáp án được bỏ qua khi nạp; câu trùng nhưng mâu thuẫn đáp án được đánh dấu REVIEW, không dùng để chấm trước khi duyệt.</p>
         </div>

@@ -112,3 +112,18 @@
 #ap-lms-admin .lms-admin-progress{width:100%;height:9px;border-radius:99px;overflow:hidden;background:#e4edf5;margin:10px 0}
 #ap-lms-admin .lms-admin-progress i{display:block;background:#0d8074;height:100%;transition:width .2s}
 @media(max-width:680px){#ap-lms-app .lms-container{padding:8px 10px 28px}#ap-lms-app .lms-topbar{border-radius:13px;min-height:64px;padding:9px}#ap-lms-app .lms-brand img{width:43px;height:43px}#ap-lms-app h1{font-size:13px}#ap-lms-app .lms-brand p{font-size:10px}#ap-lms-app .lms-topbar .lms-btn{min-height:37px;font-size:11px;padding:7px 9px}#ap-lms-app .lms-card{padding:15px;border-radius:15px}#ap-lms-app .lms-metrics{gap:7px}#ap-lms-app .lms-metric{padding:10px}#ap-lms-app .lms-metric strong{font-size:21px}#ap-lms-app .lms-metric span{font-size:10px}#ap-lms-app .lms-grid{grid-template-columns:1fr}#ap-lms-app .lms-answer{font-size:13px;padding:12px}#ap-lms-app .lms-login{margin:20px auto 0}#ap-lms-app .lms-quiz-controls .lms-btn{min-width:auto}}
+
+/* V1.4: keep LMS admin forms within the main panel on narrow/zoomed screens. */
+#admin-app, #admin-app .main-content, #admin-app #lms, #ap-lms-admin,
+#ap-lms-admin .lms-admin-section, #ap-lms-admin .lms-admin-header {min-width:0;max-width:100%;}
+#admin-app #lms {overflow-x:hidden;}
+#ap-lms-admin .lms-admin-fields {grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));}
+#ap-lms-admin :is(input,select,textarea,.lms-admin-tablewrap) {max-width:100%;min-width:0;box-sizing:border-box;}
+#ap-lms-admin :is(h2,h3,p,.lms-admin-status,.lms-note) {overflow-wrap:anywhere;}
+@media(max-width:700px){
+  #admin-app #lms {padding:10px;}
+  #ap-lms-admin .lms-admin-section {padding:12px;}
+  #ap-lms-admin .lms-admin-toolbar {flex-wrap:wrap;}
+  #ap-lms-admin .lms-admin-toolbar > :is(button,input,a) {max-width:100%;}
+  #ap-lms-admin .lms-idrow {flex-wrap:wrap;}
+}

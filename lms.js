@@ -28,7 +28,14 @@ async function apLmsApi(action,params={},method='GET',admin=false){
     response=await fetch(url,{method,redirect:'follow',cache:'no-store',signal:ctrl.signal,...(method==='POST'?{headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)}:{})});
     const txt=await response.text();let result;
     try{result=JSON.parse(txt);}catch(e){throw new Error('Backend không trả JSON hợp lệ. Cần triển khai Apps Script mới nhất.');}
-    if(!response.ok||result.success===false)throw new Error(result.message||'Yêu cầu không thành công.');
+    if(!response.ok||result.success===false){
+      const raw=String(result.message||'Yeu cau khong thanh cong.');
+      let code=String(result.error_code||raw.split(':')[0]||'API_ERROR').slice(0,80);
+      console.error('[AP LMS API]',{action,method,status:response.status,code,message:raw});
+      if(!admin && /UNAUTHORIZED:.*Gi[a-z\u00e1]o vi[e\u00ean]n/i.test(raw))
+        throw new Error('LMS_BACKEND_OUTDATED: API học sinh đang bị backend yêu cầu quyền giáo viên. Cần cập nhật Code.gs và triển khai New Version của Apps Script (giữ URL /exec).');
+      throw new Error(raw);
+    }
     return result.data;
   }catch(e){if(e.name==='AbortError')throw new Error('Máy chủ phản hồi quá chậm. Vui lòng kiểm tra mạng hoặc thử lại.');throw e;}
   finally{clearTimeout(timeout);}
@@ -69,9 +76,23 @@ async function apLmsLogin(event){
   if(!/^0\d{9}$/.test(phone)){apLmsError('Nhập đúng 10 chữ số điện thoại đã đăng ký với Trung tâm.');return;}
   apLmsBusy(true);apLmsClearError();
   try{
+    await apLmsCheckBackend();
     const result=await apLmsApi('apLmsPhoneLogin',{student_id:candidate.student_id,parent_phone:phone},'POST');
     AP_LMS_UI.session=result.session_token;AP_LMS_UI.student=result.student;sessionStorage.setItem('ap_lms_student_token',result.session_token);await apLmsLoadDashboard();
   }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
+}
+let AP_LMS_BACKEND_CHECKED_AT=0;
+async function apLmsCheckBackend(){
+  if(Date.now()-AP_LMS_BACKEND_CHECKED_AT<180000)return true;
+  let cap;
+  try{cap=await apLmsApi('apLmsPublicDiagnostics',{},'GET',false);}
+  catch(e){
+    throw new Error('LMS_BACKEND_MISMATCH: Web và Apps Script chưa đồng bộ V1.4. Giáo viên cần cập nhật Code.gs, Module_LMS.gs, Module_LMSBank.gs và Deploy New Version trên deployment hiện tại. Chi tiết: '+e.message);
+  }
+  if(!cap||cap.backend!=='ANPHUC_LMS_V1_4'||cap.public_lms!==true)
+    throw new Error('LMS_BACKEND_MISMATCH: Apps Script đang chạy thiếu API cổng học sinh V1.4 hoặc thiếu Module_LMS.gs. Hãy cập nhật deployment.');
+  AP_LMS_BACKEND_CHECKED_AT=Date.now();
+  return true;
 }
 function apLmsDate(value){if(!value)return '';const d=new Date(value);return Number.isFinite(d.valueOf())?d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):String(value);}
 async function apLmsLoadDashboard(){
@@ -143,18 +164,32 @@ async function apLmsLoadAdmin(){
   apLmsAdminMsg('Đang kiểm tra kết nối ngân hàng...');
   try{
     const st=await apLmsApi('apLmsBankStatus',{},'GET',true);
+    AP_LMS_ADMIN.bankId=st.bank_id||'';
     AP_LMS_ADMIN.bankReady=st.configured;
+    if(st.configured && st.bank_id){apLmsEl('ap-lms-bank-id').value=st.bank_id;}
     apLmsEl('ap-lms-bank-summary').textContent=st.configured?`Đã kết nối · ${Number(st.count||0).toLocaleString('vi-VN')} câu · ${Number(st.ready||0).toLocaleString('vi-VN')} câu READY · Ngân hàng: ...${apLmsEsc(st.bank_id.slice(-6))}`:'Chưa kết nối ngân hàng. Hãy tạo ngân hàng mới hoặc nhập ID Google Sheets riêng.';
-    if(st.bank_url)apLmsEl('ap-lms-bank-link').href=st.bank_url;
+    if(st.bank_url){apLmsEl('ap-lms-bank-link').href=st.bank_url;apLmsEl('ap-lms-bank-link').hidden=false;}else{apLmsEl('ap-lms-bank-link').hidden=true;}
     if(st.configured){await apLmsLoadCatalog();await apLmsLoadAssignments();}apLmsAdminMsg('Sẵn sàng.');
   }catch(e){apLmsAdminMsg(e.message);}
 }
 async function apLmsNewBank(){if(!confirm('Tạo Google Spreadsheet ngân hàng riêng, không thay đổi bảng tính trung tâm?'))return;
   try{apLmsAdminMsg('Đang tạo ngân hàng...');const r=await apLmsApi('apLmsNewBank',{},'POST',true);apLmsAdminMsg('Đã tạo ngân hàng: '+r.url);await apLmsLoadAdmin();}
   catch(e){apLmsAdminMsg(e.message);}}
-async function apLmsConnectBank(){const id=(apLmsEl('ap-lms-bank-id').value||'').trim().match(/[-\w]{20,}/)?.[0]||'';if(!id){apLmsAdminMsg('Nhập ID bảng tính hoặc đường dẫn Google Sheets của ngân hàng.');return;}
-  try{const d=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id},'POST',true);apLmsAdminMsg('Đã kết nối ngân hàng ...'+d.bank_id_tail);await apLmsLoadAdmin();}
-  catch(e){apLmsAdminMsg(e.message);}}
+async function apLmsConnectBank(){
+  const raw=(apLmsEl('ap-lms-bank-id').value||'').trim();
+  const match=raw.match(/^https:\/\/docs\.google\.com\/spreadsheets\/d\/([\w-]{20,})(?:[/?#]|$)/i);
+  const id=match?match[1]:(/^[\w-]{20,}$/.test(raw)?raw:'');
+  if(!id){apLmsAdminMsg('BANK_ID_INVALID: Nhập đúng URL Google Sheets hoặc ID bảng tính.');return;}
+  const switching=AP_LMS_ADMIN.bankId&&AP_LMS_ADMIN.bankId!==id;
+  if(switching&&!confirm('Đang chuyển sang ngân hàng khác. Bạn đã sao lưu và muốn đổi nguồn?'))return;
+  try{
+    apLmsAdminMsg('Đang kiểm tra quyền truy cập và cấu trúc ngân hàng...');
+    const d=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id,confirm_switch:!!switching},'POST',true);
+    AP_LMS_ADMIN.bankId=id;
+    apLmsAdminMsg('Đã kết nối ngân hàng ...'+d.bank_id_tail);
+    await apLmsLoadAdmin();
+  }catch(e){apLmsAdminMsg(e.message);}
+}
 async function apLmsLoadCatalog(){
   const d=await apLmsApi('apLmsCatalog',{},'GET',true);AP_LMS_ADMIN.catalog=d.catalog||[];
   const grade=apLmsEl('ap-lms-assignment-grade'),chapter=apLmsEl('ap-lms-assignment-chapter');
@@ -179,32 +214,82 @@ function apLmsNormalizeImportRow(r,source,row){
   const answer=value('CorrectAnswer','Correct answer','Correct Answer','Đáp án').toUpperCase();
   return {QuestionUID:value('QuestionUID'),SourceSheet:value('SourceSheet')||source,SourceRow:value('SourceRow')||row,OriginalID:value('OriginalID','ID','ID question'),Grade:grade,Subject:value('Subject')||'Toán',Chapter:value('Chapter','Chương'),Topic:value('Topic','Bài'),OriginalLevel:originalLevel,LMS_Level:normalizedLevel,Question:value('Question','Câu hỏi'),A:value('A','Option 1','Option1'),B:value('B','Option 2','Option2'),C:value('C','Option 3','Option3'),D:value('D','Option 4','Option4'),CorrectAnswer:answer,Explanation:value('Explanation','Explain'),Status:value('Status')||'READY',Notes:value('Notes'),Type:'MC'};
 }
-async function apLmsImportExcel(event){const f=event?.target?.files?.[0];if(!f)return;if(AP_LMS_ADMIN.importing)return;
-  if(!window.XLSX){apLmsAdminMsg('Thiếu thư viện đọc XLSX, hãy tải lại trang khi có mạng.');return;}
-  AP_LMS_ADMIN.importing=true;const bar=apLmsEl('ap-lms-import-bar');bar.style.width='0%';
+async function apLmsCommitImport(importId){
+  const bar=apLmsEl('ap-lms-import-bar');let done=false,loops=0,last=0;
+  localStorage.setItem('ap_lms_import_pending_v14',importId);
+  while(!done){
+    if(++loops>260)throw new Error('IMPORT_LOOP_LIMIT: Import did not complete. Use Resume Import.');
+    const r=await apLmsApi('apLmsImportFinalize',{import_id:importId,limit:100},'POST',true);
+    if(r.processed<=last && loops>1 && !r.done)throw new Error('IMPORT_NO_PROGRESS: Import cursor did not advance.');
+    last=r.processed;done=!!r.done;
+    bar.style.width=(55+Math.round(45*r.processed/Math.max(1,r.total)))+'%';
+    apLmsAdminMsg('Dang ghi ngan hang: '+r.processed+'/'+r.total+' cau. Them moi '+r.added+', trung '+r.duplicate+', can xem '+r.review+'.');
+    if(done){
+      localStorage.removeItem('ap_lms_import_pending_v14');
+      apLmsAdminMsg('IMPORT_DONE: '+r.total+' cau da xu ly; them '+r.added+', trung '+r.duplicate+', can duyet '+r.review+'. Tong '+r.bank_total+' cau.');
+    }
+  }
+  await apLmsLoadCatalog();
+}
+async function apLmsResumeImport(){
+  const id=localStorage.getItem('ap_lms_import_pending_v14');
+  if(!id){apLmsAdminMsg('Không có đợt nhập nào đang chờ tiếp tục.');return;}
+  if(AP_LMS_ADMIN.importing)return;
+  AP_LMS_ADMIN.importing=true;
+  try{await apLmsCommitImport(id);}catch(e){apLmsAdminMsg('IMPORT_RESUME_ERROR: '+e.message);}
+  finally{AP_LMS_ADMIN.importing=false;}
+}
+async function apLmsImportExcel(event){
+  const f=event&&event.target&&event.target.files&&event.target.files[0];
+  if(!f||AP_LMS_ADMIN.importing)return;
+  if(!window.XLSX){apLmsAdminMsg('XLSX_LIBRARY_MISSING: Thu vien doc Excel chua duoc tai.');return;}
+  AP_LMS_ADMIN.importing=true;
+  const bar=apLmsEl('ap-lms-import-bar');bar.style.width='0%';
   try{
-    const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:false});const rows=[];
-    wb.SheetNames.filter(name=>name==='LMS_Questions'||name==='ToanTHCS'||name==='ToanTHPT'||name==='QuestionBank').forEach(name=>{
+    if(!AP_LMS_ADMIN.bankReady)throw new Error('BANK_NOT_CONNECTED: Ket noi Google Sheets ngan hang truoc khi nap.');
+    const wb=XLSX.read(await f.arrayBuffer(),{type:'array',cellDates:false});
+    const names=wb.SheetNames.includes('LMS_Questions')?['LMS_Questions']:wb.SheetNames.filter(x=>['ToanTHCS','ToanTHPT','QuestionBank'].includes(x));
+    if(!names.length)throw new Error('SHEET_MISSING: Excel must include LMS_Questions or original question sheets.');
+    const rows=[];let invalid=0,skipped=0;
+    for(const name of names){
       const list=XLSX.utils.sheet_to_json(wb.Sheets[name],{defval:'',raw:false});
-      list.forEach((r,i)=>{const item=apLmsNormalizeImportRow(r,name,i+2);if(item)rows.push(item);});
-    });
-    if(!rows.length)throw new Error('Không có sheet LMS_Questions, ToanTHCS, ToanTHPT hoặc QuestionBank chứa câu MC.');
-    if(rows.length>20000)throw new Error('Một lần nhập tối đa 20.000 câu.');
-    const importId='IMP'+Date.now()+'_'+Math.random().toString(36).slice(2,10);let chunk=[],size=0,batches=[];
-    for(const row of rows){const n=JSON.stringify(row).length;if(chunk.length>=55||size+n>155000){batches.push(chunk);chunk=[];size=0;}chunk.push(row);size+=n;}
+      const header=(XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,range:0})[0]||[]).map(x=>String(x).trim());
+      if(!['Question','CauHoi','Câu hỏi'].some(k=>header.includes(k))) {
+        if(!header.includes('Question'))throw new Error('SHEET_COLUMN_MISSING: '+name+' missing Question column.');
+      }
+      list.forEach((raw,i)=>{
+        const type=String(raw.Type||raw.type||raw.QuestionType||'MC').trim().toUpperCase();
+        if(type && type!=='MC' && type!=='MULTIPLE_CHOICE'){skipped++;return;}
+        const normalized=apLmsNormalizeImportRow(raw,name,i+2);
+        if(!normalized||!normalized.Question||!normalized.Grade||!normalized.Chapter){invalid++;return;}
+        rows.push(normalized);
+      });
+    }
+    if(!rows.length)throw new Error('IMPORT_EMPTY: No usable MC rows found.');
+    if(rows.length>20000)throw new Error('IMPORT_LIMIT: Maximum 20000 questions per import.');
+    const importId='IMP'+Date.now()+'_'+Math.random().toString(36).slice(2,10);
+    const batches=[];let chunk=[],size=0;
+    for(const row of rows){
+      const n=JSON.stringify(row).length;
+      if(n>48000){invalid++;continue;}
+      if(chunk.length>=145 || size+n>160000){if(chunk.length)batches.push(chunk);chunk=[];size=0;}
+      chunk.push(row);size+=n;
+    }
     if(chunk.length)batches.push(chunk);
-    apLmsAdminMsg(`Tìm thấy ${rows.length} câu MC. Đang nạp ${batches.length} gói... Không tắt trang khi chưa hoàn tất.`);
+    if(!batches.length)throw new Error('IMPORT_EMPTY: No rows fit the size limit.');
+    apLmsAdminMsg('Tim thay '+rows.length+' cau MC; '+invalid+' dong can xem, '+skipped+' dong khac MC. Dang gui '+batches.length+' goi...');
     for(let i=0;i<batches.length;i++){
       await apLmsApi('apLmsImportStageBatch',{import_id:importId,batch_id:'B'+String(i+1).padStart(5,'0'),rows:batches[i]},'POST',true);
-      bar.style.width=Math.round(85*(i+1)/batches.length)+'%';
-      apLmsAdminMsg(`Đã gửi ${i+1}/${batches.length} gói (${rows.length} câu MC).`);
+      bar.style.width=Math.round(55*(i+1)/batches.length)+'%';
+      apLmsAdminMsg('Da tai '+(i+1)+'/'+batches.length+' goi. Sau do se chuan hoa theo tung dot.');
     }
-    apLmsAdminMsg('Đang chuẩn hóa ID, lọc trùng và ghi vào ngân hàng...');
-    const final=await apLmsApi('apLmsImportFinalize',{import_id:importId},'POST',true);bar.style.width='100%';
-    apLmsAdminMsg(`Hoàn tất: ${final.added} câu mới; ${final.duplicate} câu trùng bỏ qua; ${final.review} câu cần rà soát; ngân hàng hiện ${final.bank_total} câu. Bản gốc không bị xóa.`);
-    await apLmsLoadCatalog();
-  }catch(e){apLmsAdminMsg('Chưa hoàn tất nạp: '+e.message+' Nếu bị gián đoạn, không tạo bài từ câu chưa được xác nhận.');}
-  finally{AP_LMS_ADMIN.importing=false;event.target.value='';}
+    // Save only when all staging requests succeeded. Partial uploads may be safely restarted with the same Excel.
+    localStorage.setItem('ap_lms_import_pending_v14',importId);
+    await apLmsCommitImport(importId);
+  }catch(e){
+    console.error('[AP LMS IMPORT]',e.message);
+    apLmsAdminMsg('IMPORT_ERROR: '+e.message+'. Neu da gui het cac goi, bam Tiep tuc nap de khoi phuc.');
+  }finally{AP_LMS_ADMIN.importing=false;if(event&&event.target)event.target.value='';}
 }
 async function apLmsDeduplicate(){if(!confirm('Quét ngân hàng: đánh dấu DUPLICATE và REVIEW, không xóa câu hỏi. Tiếp tục?'))return;
   try{apLmsAdminMsg('Đang lọc câu trùng, vui lòng không đóng cửa sổ...');const r=await apLmsApi('apLmsDeduplicate',{},'POST',true);apLmsAdminMsg(`Đã kiểm tra ${r.scanned} câu. Trùng ${r.duplicates}; xung đột cần duyệt ${r.conflicts}. Không có câu nào bị xóa.`);await apLmsLoadCatalog();}catch(e){apLmsAdminMsg(e.message);}}
