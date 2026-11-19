@@ -1532,6 +1532,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
 <link rel="stylesheet" href="lms.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+  <script defer src="lms.js"></script>
 </head>
 <body>
 
@@ -1567,7 +1568,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
         <div class="role-icon"><i class="bi bi-mortarboard"></i></div>
         <span class="role-audience">CỔNG HỌC TẬP</span>
         <h2>Học sinh</h2>
-        <p>Đăng nhập bằng tên và mã PIN, chọn bài đúng khối, luyện tập ba cấp độ và xem điểm.</p>
+        <p>Đăng nhập bằng họ tên và số điện thoại đã đăng ký, chọn bài đúng khối, luyện tập ba cấp độ và xem điểm.</p>
         <button class="role-entry-btn" type="button">Vào học <i class="bi bi-arrow-right"></i></button>
       </article>
     </div>
@@ -2427,7 +2428,7 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
   // ============================================
   // CẤU HÌNH API - LIÊN KẾT VỚI GOOGLE SHEET
   // ============================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbx5gRruqKbVrTrONdCLtb0bEPZYGlKraa0lka-W3ZlogaDl1728NsDGj15vZa821rVjZg/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwmbJdQVE8x1bByhKO-YZv_XxwglJ-J7EaOOYcHNHekHhNTcwE6udjY2Y8I5N2Q7giE/exec";
   const FRONTEND_VERSION = 'V4.27';
   const CENTER_INFO = {
     address: '30/11D Phước Tường, Phước Long, Nam Nha Trang',
@@ -2500,10 +2501,14 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
       const supportsLogin=r?.data?.capabilities?.admin_login===true;
       PUBLIC_API_STATE.version=v;
       PUBLIC_API_STATE.apiBuild=build;
+      // The backend build identifier is diagnostic, not an authentication mechanism.
+      // Let the server validate credentials and sessions instead of rejecting ALL
+      // logins merely because the publicPing build string has changed.
       if(v!==EXPECTED_BACKEND_VERSION || build!==EXPECTED_API_BUILD || !supportsLogin){
-        PUBLIC_API_STATE.diagnostic='Backend Apps Script không đúng bản web hiện tại (nhận: '+(build||v||'không nhận diện')+'). Hãy mở đúng dự án Apps Script An Phúc, dán Code.gs đi kèm bộ V4.28.5, bấm Save rồi Deploy → Manage deployments → Edit → New version → Deploy. Sau đó bảo đảm URL /exec trong index.html trùng với Web app URL mới nhất.';
+        PUBLIC_API_STATE.diagnostic='Máy chủ đang chạy phiên bản '+(build||v||'chưa xác định')+'. Nếu không đăng nhập được, cần cập nhật đúng Code.gs và triển khai phiên bản mới của Apps Script tại URL /exec đang cấu hình.';
         setPublicApiStatus_('warn','⚠️ '+escapeHtml(PUBLIC_API_STATE.diagnostic));
-        return false;
+        PUBLIC_API_STATE.status='ok'; // API is reachable; server enforces auth.
+        return true;
       }
       PUBLIC_API_STATE.diagnostic='';
       if(showOk)setPublicApiStatus_('ok','✅ Backend đúng bản '+escapeHtml(build)+'; đăng nhập máy chủ đã sẵn sàng.');
@@ -2522,9 +2527,12 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
 
   const CORE_COMPAT_ACTIONS = new Set(['adminLogin','validateAdminSession','publicFindStudentByName','findParentStudentCandidates','publicVerifyStudentPhone','verifyParentStudent','getPublicBootstrap','getPublicRegistrationInfo','getPublicSchedule','getPublicExams','getPublicSystemStatus','systemManifest','submitRegistration']);
   async function callAPI(action, params = {}, method = 'GET') {
-    if(action!=='publicPing' && PUBLIC_API_STATE.status!=='ok') {
+    // Core public/login operations must still reach the configured server even
+    // when publicPing times out or is served by an older deployment. A version
+    // mismatch must never prevent a valid parent or teacher from logging in.
+    if(action!=='publicPing' && PUBLIC_API_STATE.status!=='ok' && !CORE_COMPAT_ACTIONS.has(action)) {
       const ready=await checkPublicBackend_(false);
-      if(!ready && (action==='adminLogin' || !CORE_COMPAT_ACTIONS.has(action))) throw new Error(PUBLIC_API_STATE.diagnostic || `Backend chưa đồng bộ ${EXPECTED_BACKEND_VERSION}. Hãy cập nhật Code.gs và Deploy New Version.`);
+      if(!ready) throw new Error(PUBLIC_API_STATE.diagnostic || 'Không xác nhận được máy chủ Apps Script.');
     }
     let url=API_URL; const options={method,redirect:'follow'}; const payload={...(params||{})};
     payload._client_id=getSecurityClientId();
@@ -2588,7 +2596,7 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
     if(d.settings){const g=document.getElementById('registration-guide-text'),ng=document.getElementById('registration-notify-group'),np=document.getElementById('registration-notify-phone'),eu=document.getElementById('exam-base-url');if(g)g.value=d.settings.registration_guide_text||'';if(ng)ng.value=d.settings.registration_notify_group||'';if(np)np.value=d.settings.registration_notify_phone||'';if(eu)eu.value=d.settings.exam_redirect_base_url||'';}
   }
 
-  function showLandingMode(){const landing=document.getElementById('role-landing'),pub=document.getElementById('public-app'),admin=document.getElementById('admin-app');if(landing)landing.style.display='flex';if(pub)pub.style.display='none';if(admin)admin.style.display='none';}
+  function showLandingMode(){const landing=document.getElementById('role-landing'),pub=document.getElementById('public-app'),admin=document.getElementById('admin-app'),lms=document.getElementById('ap-lms-app');if(landing)landing.style.display='flex';if(pub)pub.style.display='none';if(admin)admin.style.display='none';if(lms){lms.hidden=true;lms.style.display='none';}}
   function showPublicMode(){showLandingMode();}
   function openParentPortal(){const landing=document.getElementById('role-landing');if(landing)landing.style.display='none';document.getElementById('admin-app').style.display='none';document.getElementById('public-app').style.display='block';if(!PUBLIC_PORTAL_READY){PUBLIC_PORTAL_READY=true;initPublicChat();}}
   async function openTeacherPortal(){if(isAdminAuthenticated()){try{loading(true);const check=await callAPI('validateAdminSession',{},'GET');if(check.data?.valid){await enterAdminMode(check.data.username||'admin');return;}}catch(e){console.warn(e);}finally{loading(false);}try{sessionStorage.removeItem('ap_admin_auth');sessionStorage.removeItem('ap_admin_token');}catch(e){}}openLoginModal();}
@@ -2597,11 +2605,8 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
     setLoginError_('');
     document.getElementById('modal-login').style.display='flex';
     setTimeout(()=>document.getElementById('login-pass')?.focus(),50);
-    // Kiểm tra API sớm để giáo viên không nhập mật khẩu vào deployment cũ.
-    checkPublicBackend_(false).then(ok=>{
-      if(!ok && document.getElementById('modal-login')?.style.display==='flex')
-        setLoginError_(PUBLIC_API_STATE.diagnostic);
-    });
+    // Non-blocking diagnostic only; login authorization is checked by server.
+    checkPublicBackend_(false).catch(()=>{});
   }
   async function checkLoginBackendNow(){
     setLoginError_('Đang kiểm tra kết nối Apps Script...');
@@ -2618,8 +2623,8 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
     if(!username||!password){setLoginError_('Vui lòng nhập đầy đủ tài khoản và mật khẩu.');return;}
     try{
       loading(true);if(btn)btn.disabled=true;
-      const backendOk=await checkPublicBackend_(false);
-      if(!backendOk)throw new Error(PUBLIC_API_STATE.diagnostic || 'Backend chưa đồng bộ; chưa gửi yêu cầu đăng nhập.');
+      // Authentication is decided by adminLogin on Apps Script, never by a
+      // public version string. The user already chose the configured server.
       const r=await callAPI('adminLogin',{username,password},'POST');const x=r.data||{};
       if(!x.authenticated||!x.token)throw new Error('Máy chủ không trả phiên đăng nhập hợp lệ. Hãy chạy setupSystemV427() rồi Deploy lại.');
       sessionStorage.setItem('ap_admin_auth','1');sessionStorage.setItem('ap_admin_token',x.token);
@@ -4074,9 +4079,7 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
     }
 
     const m = document.getElementById('tk-thang').value; const y = document.getElementById('tk-nam').value;
-    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; } th, td { border: 1px solid #000; padding: 8px; text-align: left; vertical-align: middle; } th { background-color: #e3f2fd; font-weight: bold; text-align: center; }</style></head><body><h2>BÁO CÁO THU HỌC PHÍ CHUYỂN KHOẢN - THÁNG ${m}/${y}</h2>${tableClone.outerHTML}<script defer src="lms.js"></script>
-<script defer src="lms.js"></script>
-</body></html>`;
+    const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; } th, td { border: 1px solid #000; padding: 8px; text-align: left; vertical-align: middle; } th { background-color: #e3f2fd; font-weight: bold; text-align: center; }</style></head><body><h2>BÁO CÁO THU HỌC PHÍ CHUYỂN KHOẢN - THÁNG ${m}/${y}</h2>${tableClone.outerHTML}</body></html>`;
     const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `Bao_Cao_Chuyen_Khoan_T${m}_${y}.xls`;
