@@ -1,6 +1,6 @@
 /* AN PHUC LMS V1.2 - independent frontend, legacy functions/IDs unchanged */
 'use strict';
-const AP_LMS_UI={student:null,session:'',candidate:null,quiz:null,busy:false,bankReady:false,queryTimer:null,lookupSeq:0};
+const AP_LMS_UI={student:null,session:'',candidate:null,quiz:null,busy:false,bankReady:false,queryTimer:null,lookupSeq:0,selectedChapter:null};
 function apLmsEl(id){return document.getElementById(id);}
 function apLmsEsc(value){return String(value==null?'':value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function apLmsError(msg){const el=apLmsEl('ap-lms-message');if(el){el.textContent=String(msg||'Có lỗi xảy ra.');el.hidden=false;} }
@@ -35,7 +35,7 @@ async function apLmsApi(action,params={},method='GET',admin=false){
       if(!admin && /UNAUTHORIZED:.*Gi[a-z\u00e1]o vi[e\u00ean]n/i.test(raw)){
         if(action==='apLmsPublicDiagnostics')
           throw new Error('LMS_DIAGNOSTICS_PROTECTED: /exec đang khóa nhầm endpoint chẩn đoán công khai. Kiểm tra API_URL và cập nhật Code.gs V1.5.3. (Phản hồi gốc: '+raw+')');
-        if(['apLmsPhoneLogin','apLmsLogin','apLmsDashboard','apLmsStart','apLmsSubmit','apLmsSaveDraft'].includes(action))
+        if(['apLmsPhoneLogin','apLmsLogin','apLmsDashboard','apLmsStart','apLmsSubmit','apLmsSaveDraft','apLmsAutoCatalog','apLmsAutoStart','apLmsAutoSubmit'].includes(action))
           throw new Error('LMS_STUDENT_ROUTE_PROTECTED: API '+action+' đang bị yêu cầu quyền Giáo viên trên deployment /exec. Cập nhật Code.gs và Module_LMS.gs, rồi Deploy New Version.');
       }
       throw new Error(raw);
@@ -105,27 +105,71 @@ async function apLmsCheckBackend(){
   AP_LMS_BACKEND_CHECKED_AT=Date.now();return true;
 }
 function apLmsDate(value){if(!value)return '';const d=new Date(value);return Number.isFinite(d.valueOf())?d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):String(value);}
+function apLmsTopicCard_(t){
+  const best=t.best_score===null?'Chưa làm':(t.best_score+'/10 điểm');
+  const counts=Array.isArray(t.levels)?t.levels:[];
+  return `<article class="lms-assignment lms-topic-card" data-topic-search="${apLmsEsc((t.chapter+' '+t.topic).toLocaleLowerCase('vi-VN'))}">
+    <div class="lms-topic-head"><span class="lms-pill"><i class="bi bi-book-half"></i> Khối ${apLmsEsc(t.grade)}</span><span class="lms-topic-count">${Number(t.count)} câu khả dụng</span></div>
+    <h3>${apLmsEsc(t.topic)}</h3><p>${apLmsEsc(t.chapter)}</p>
+    <div class="lms-topic-info"><span><i class="bi bi-shuffle"></i> ${Math.min(10,Number(t.count))} câu/ngẫu nhiên</span><span><i class="bi bi-award"></i> ${apLmsEsc(best)}</span></div>
+    <small class="lms-topic-hint">${counts.filter(n=>Number(n)>0).length||1} mức độ hiện có · Thang 10 · Không yêu cầu mã đề</small>
+    <button class="lms-btn teal lms-submit-lock" type="button" data-topic-id="${apLmsEsc(t.topic_id)}">${t.best_score===null?'Làm bài ngay':'Luyện lại chủ đề'} <i class="bi bi-arrow-right"></i></button>
+  </article>`;
+}
+function apLmsSelectChapter_(chapter){
+  AP_LMS_UI.selectedChapter=chapter;
+  apLmsRenderTopicCatalog_(apLmsEl('ap-lms-topic-search')?.value||'');
+  const out=apLmsEl('ap-lms-topic-list');
+  if(out&&typeof out.scrollIntoView==='function')out.scrollIntoView({block:'start',behavior:'smooth'});
+}
+function apLmsRenderTopicCatalog_(query=''){
+  const el=apLmsEl('ap-lms-topic-list');if(!el)return;
+  const items=AP_LMS_UI.autoTopics||[];
+  const q=String(query||'').toLocaleLowerCase('vi-VN').trim();
+  const shown=items.filter(t=>(t.chapter+' '+t.topic).toLocaleLowerCase('vi-VN').includes(q));
+  const chapters=new Map();shown.forEach(t=>{if(!chapters.has(t.chapter))chapters.set(t.chapter,[]);chapters.get(t.chapter).push(t);});
+  const selected=AP_LMS_UI.selectedChapter;
+  if(!selected){
+    const rows=Array.from(chapters.entries()).sort((a,b)=>a[0].localeCompare(b[0],'vi'));
+    el.innerHTML=`<div class="lms-step-heading"><span class="lms-step-number">1</span><div><h3>Chọn chương em muốn học</h3><p>Chạm vào một chương để xem các bài tương ứng.</p></div></div>`+
+      (rows.length?`<div class="lms-chapter-grid">${rows.map(([chapter,topics],i)=>{
+        const done=topics.filter(t=>t.best_score!==null&&Number(t.best_score)>=6).length;
+        const count=topics.reduce((n,t)=>n+Number(t.count||0),0);
+        return `<button type="button" class="lms-chapter-card" data-chapter-index="${i}"><span class="lms-chapter-icon"><i class="bi bi-journal-bookmark"></i></span><span class="lms-chapter-name">${apLmsEsc(chapter)}</span><span class="lms-chapter-meta">${topics.length} bài · ${count} câu · ${done} bài đạt</span><span class="lms-chapter-open">Xem các bài <i class="bi bi-chevron-right"></i></span></button>`;
+      }).join('')}</div>`:'<div class="lms-empty">Không tìm thấy chương phù hợp.</div>');
+    el.querySelectorAll('[data-chapter-index]').forEach(btn=>btn.addEventListener('click',()=>apLmsSelectChapter_(rows[Number(btn.dataset.chapterIndex)][0])));
+    return;
+  }
+  const topics=chapters.get(selected)||[];
+  el.innerHTML=`<nav class="lms-breadcrumb" aria-label="Điều hướng chương"><button type="button" id="ap-lms-back-chapters"><i class="bi bi-arrow-left"></i> Tất cả chương</button><span aria-hidden="true">/</span><b>${apLmsEsc(selected)}</b></nav>
+    <div class="lms-step-heading"><span class="lms-step-number">2</span><div><h3>Chọn bài để làm ngay</h3><p>${topics.length} bài trong ${apLmsEsc(selected)} · không cần mã đề</p></div></div>`+
+    (topics.length?`<div class="lms-grid">${topics.map(apLmsTopicCard_).join('')}</div>`:'<div class="lms-empty">Không tìm thấy bài phù hợp với bộ lọc. Hãy thử từ khóa khác.</div>');
+  apLmsEl('ap-lms-back-chapters')?.addEventListener('click',()=>apLmsSelectChapter_(null));
+  el.querySelectorAll('[data-topic-id]').forEach(btn=>btn.addEventListener('click',()=>apLmsStartAuto(btn.dataset.topicId)));
+}
 async function apLmsLoadDashboard(){
-  apLmsClearError();apLmsScreen('ap-lms-dashboard');apLmsEl('ap-lms-dashboard-content').innerHTML='<div class="lms-spinner">Đang tải bài tập đúng khối/lớp của em...</div>';
+  apLmsClearError();apLmsScreen('ap-lms-dashboard');
+  apLmsEl('ap-lms-dashboard-content').innerHTML='<div class="lms-spinner">Đang tải danh mục chương và bài đúng khối của em...</div>';
   try{
-    const d=await apLmsApi('apLmsDashboard',{session_token:AP_LMS_UI.session});AP_LMS_UI.student=d.student;
-    apLmsEl('ap-lms-dashboard-content').innerHTML=`<div class="lms-title-row"><div><h2>Xin chào, ${apLmsEsc(d.student.name)}!</h2><p>Khối ${apLmsEsc(d.student.grade)} · Lớp ${apLmsEsc(d.student.class_id)} · Chọn bài là bắt đầu làm ngay.</p></div><span class="lms-pill"><i class="bi bi-book"></i> Bài tập của em</span></div>
-    <div class="lms-metrics"><div class="lms-metric"><strong>${d.assignments.length}</strong><span>Tổng bài tập</span></div><div class="lms-metric"><strong>${d.completed}</strong><span>Đã hoàn thành</span></div><div class="lms-metric"><strong>${d.pending}</strong><span>Chưa hoàn thành</span></div></div>
-    <div class="lms-grid">${d.assignments.length?d.assignments.map(a=>{
-      const scores=a.levels.scores||[],unlocked=a.levels.unlocked||[];let next=[0,1,2].find(i=>unlocked[i]&&(scores[i]===null||scores[i]<6));
-      const completed=scores[2]!==null&&scores[2]>=6;if(next===undefined)next=completed?2:0;
-      const clickable=!a.expired;
-      return `<article class="lms-assignment"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><span class="lms-pill ${a.expired?'warn':''}">Khối ${apLmsEsc(d.student.grade)} ${a.expired?' · Quá hạn':''}</span><small style="color:#63778d">3 cấp độ</small></div><h3>${apLmsEsc(a.title)}</h3><p>${apLmsEsc(a.chapter||'Luyện tập Toán')}</p><div class="lms-levels">${scores.map((v,i)=>`<span class="${v!==null&&v>=6?'passed':i===next?'next':''}">Cấp ${i+1}<br><b>${v===null?'--':v+'/10'}</b></span>`).join('')}</div><small style="color:#64748b">${a.due_at?'Hạn: '+apLmsEsc(apLmsDate(a.due_at)):'Không giới hạn hạn nộp'}</small><button class="lms-btn ${completed?'ghost':'teal'} lms-submit-lock" type="button" data-assignment="${apLmsEsc(a.assignment_id)}" data-level="${next+1}" ${clickable?'':'disabled'}>${completed?'Luyện lại cấp 3':a.expired?'Đã quá hạn':'Làm bài cấp '+(next+1)} <i class="bi bi-arrow-right"></i></button></article>`;
-    }).join(''):'<div class="lms-empty"><i class="bi bi-journal-check" style="font-size:38px;color:#087b72"></i><h3>Hiện chưa có bài tập được giao</h3><p>Khi giáo viên giao bài theo khối hoặc lớp, bài sẽ xuất hiện tại đây.</p></div>'}</div>`;
-    apLmsEl('ap-lms-dashboard-content').querySelectorAll('[data-assignment]').forEach(btn=>btn.addEventListener('click',()=>apLmsStart(btn.dataset.assignment,Number(btn.dataset.level))));
+    const d=await apLmsApi('apLmsAutoCatalog',{session_token:AP_LMS_UI.session});
+    AP_LMS_UI.student=d.student;AP_LMS_UI.autoTopics=Array.isArray(d.topics)?d.topics:[];AP_LMS_UI.selectedChapter=null;
+    const noBank=d.bank_connected===false;
+    apLmsEl('ap-lms-dashboard-content').innerHTML=`<div class="lms-title-row"><div><h2>Xin chào, ${apLmsEsc(d.student.name)}!</h2><p>Khối ${apLmsEsc(d.student.grade)} · Lớp ${apLmsEsc(d.student.class_id)} · Em chọn chương và bài để luyện tập ngay.</p></div><span class="lms-pill"><i class="bi bi-mortarboard-fill"></i> Tự chọn bài học</span></div>
+    <div class="lms-metrics"><div class="lms-metric"><strong>${AP_LMS_UI.autoTopics.length}</strong><span>Chủ đề có câu hỏi</span></div><div class="lms-metric"><strong>${Number(d.completed||0)}</strong><span>Đã đạt 6 điểm</span></div><div class="lms-metric"><strong>${Number(d.pending||0)}</strong><span>Chưa đạt hoặc chưa làm</span></div></div>
+    ${noBank?'<div class="lms-empty">Ngân hàng chưa kết nối. Em vẫn đăng nhập được nhưng chưa có bài để làm.</div>':
+      `<div class="lms-topic-toolbar"><label for="ap-lms-topic-search">Tìm chương hoặc bài học</label><input id="ap-lms-topic-search" type="search" placeholder="Ví dụ: phân số, phương trình, hình học..." autocomplete="off"><p>Chủ đề có 1–10 câu: làm toàn bộ; nhiều hơn 10 câu: hệ thống chọn ngẫu nhiên đúng 10 câu. Điểm quy đổi về thang 10.</p></div><div id="ap-lms-topic-list"></div>`}`;
+    if(!noBank){apLmsRenderTopicCatalog_();
+      apLmsEl('ap-lms-topic-search').addEventListener('input',e=>apLmsRenderTopicCatalog_(e.target.value));
+      if(!AP_LMS_UI.autoTopics.length)apLmsEl('ap-lms-topic-list').innerHTML='<div class="lms-empty">Khối này chưa có câu hỏi READY hợp lệ. Giáo viên có thể duyệt bổ sung ngân hàng.</div>';
+    }
   }catch(e){
-    if(/LMS_UNAUTHORIZED/.test(e.message||'')){apLmsLogout();apLmsError('Phiên học sinh đã hết hạn. Vui lòng đăng nhập lại.');}
+    if(/LMS_UNAUTHORIZED/.test(e.message||'')){apLmsLogout();apLmsError('Phiên học sinh hết hạn. Vui lòng đăng nhập lại.');}
     else apLmsEl('ap-lms-dashboard-content').innerHTML='<div class="lms-empty">'+apLmsEsc(e.message)+'</div>';
   }
 }
 function apLmsDraftKey(q){return 'ap_lms_draft_v2_'+q.studentId+'_'+q.assignmentId+'_'+q.level;}
 function apLmsQueueServerDraft(q){
-  if(!q||q.syncTimer||AP_LMS_BACKEND_CAPABILITIES.student_draft!==true)return;
+  if(!q||q.isAuto||q.syncTimer||AP_LMS_BACKEND_CAPABILITIES.student_draft!==true)return;
   // Random jitter prevents 40 clients from syncing all at the same moment.
   q.syncTimer=setTimeout(async()=>{
     q.syncTimer=null;
@@ -150,40 +194,116 @@ async function apLmsStart(assignmentId,level){if(AP_LMS_UI.busy)return;apLmsBusy
     AP_LMS_UI.quiz=q;apLmsScreen('ap-lms-quiz');apLmsRenderQuiz();
   }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
 }
-function apLmsRenderQuiz(){const q=AP_LMS_UI.quiz;if(!q)return;const item=q.questions[q.current],picked=q.answers[item.uid],total=Object.keys(q.answers).length;
-  apLmsEl('ap-lms-quiz-content').innerHTML=`<div class="lms-title-row"><div><span class="lms-pill">Cấp ${q.level} · 10 điểm</span><h2 style="margin-top:10px">${apLmsEsc(q.title)}</h2><p>Câu ${q.current+1}/10 · Đã chọn ${total}/10 đáp án</p></div><button type="button" class="lms-btn ghost" id="ap-lms-quiz-back">Về bài tập</button></div>
-  <div class="lms-progress-track"><div class="lms-progress-bar" style="width:${total*10}%"></div></div>
-  <nav class="lms-quiz-nav" aria-label="Chọn câu hỏi">${q.questions.map((x,i)=>`<button type="button" data-qindex="${i}" class="${q.answers[x.uid]?'done':''} ${q.current===i?'current':''}">${i+1}</button>`).join('')}</nav>
-  <div class="lms-card"><div class="lms-question lms-math"><span class="lms-pill">Câu ${q.current+1}</span><div style="margin-top:12px">${apLmsMath(item.question)}</div></div><div class="lms-answer-grid">${item.options.map((v,i)=>{const letter='ABCD'[i];return `<button class="lms-answer ${picked===letter?'selected':''}" type="button" data-answer="${letter}"><b>${letter}</b><span class="lms-math">${apLmsMath(v)}</span></button>`;}).join('')}</div><div class="lms-quiz-controls"><button type="button" class="lms-btn ghost" id="ap-lms-prev" ${q.current===0?'disabled':''}>Câu trước</button><button type="button" class="lms-btn ghost" id="ap-lms-next" ${q.current===9?'disabled':''}>Câu tiếp</button><button type="button" class="lms-btn teal lms-submit-lock" id="ap-lms-submit">Nộp bài (${total}/10)</button></div><p class="lms-help">Bài được lưu tạm trên thiết bị khi chọn đáp án. Chỉ có điểm sau khi máy chủ xác nhận nộp thành công.</p></div>`;
+function apLmsAutoActiveKey_(studentId,topicId){return 'ap_lms_auto_active_'+studentId+'_'+topicId;}
+async function apLmsStartAuto(topicId){
+  if(AP_LMS_UI.busy)return;
+  apLmsBusy(true);apLmsClearError();
+  try{
+    const sid=AP_LMS_UI.student?.student_id||'';
+    const key=apLmsAutoActiveKey_(sid,topicId);let a=null;
+    try{
+      const saved=JSON.parse(localStorage.getItem(key)||'null');
+      if(saved && Date.now()-Number(saved.started_at||0)<7100000 &&
+         saved.topic_id===topicId && saved.attempt_token && Array.isArray(saved.questions) &&
+         saved.questions.length>=1 && saved.questions.length<=10)a=saved;
+    }catch(e){}
+    if(!a){
+      a=await apLmsApi('apLmsAutoStart',{session_token:AP_LMS_UI.session,topic_id:topicId});
+      a.started_at=Date.now();
+      try{localStorage.setItem(key,JSON.stringify(a));}catch(e){}
+    }
+    if(!a.questions?.length||a.questions.length>10)throw new Error('Chủ đề không có bộ câu hỏi hợp lệ.');
+    const quiz={isAuto:true,assignmentId:topicId,topicId,level:1,attemptToken:a.attempt_token,
+      questions:a.questions,answers:{},current:0,title:a.title,studentId:sid,totalQuestions:a.questions.length};
+    try{
+      const raw=JSON.parse(localStorage.getItem(apLmsDraftKey(quiz))||'null');
+      if(raw?.answers)quiz.answers=Object.fromEntries(Object.entries(raw.answers).filter(([uid,ans])=>
+        a.questions.some(q=>q.uid===uid)&&['A','B','C','D'].includes(ans)));
+    }catch(e){}
+    AP_LMS_UI.quiz=quiz;apLmsScreen('ap-lms-quiz');apLmsRenderQuiz();
+  }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
+}
+function apLmsRenderQuiz(){
+  const q=AP_LMS_UI.quiz;if(!q)return;
+  const item=q.questions[q.current],picked=q.answers[item.uid],answered=Object.keys(q.answers).length;
+  const n=q.questions.length,rate=Math.round(answered/n*100);
+  apLmsEl('ap-lms-quiz-content').innerHTML=`<div class="lms-title-row"><div><span class="lms-pill">${q.isAuto?'Bài tự luyện':'Cấp '+q.level} · Thang điểm 10</span><h2 style="margin-top:10px">${apLmsEsc(q.title)}</h2><p>Câu ${q.current+1}/${n} · Đã chọn ${answered}/${n} đáp án</p></div><button type="button" class="lms-btn ghost" id="ap-lms-quiz-back">Về danh sách chủ đề</button></div>
+  <div class="lms-progress-track"><div class="lms-progress-bar" style="width:${rate}%"></div></div>
+  <div class="lms-quiz-legend"><span><i class="lms-dot done"></i> Đã chọn</span><span><i class="lms-dot"></i> Chưa chọn</span><span><i class="lms-dot active"></i> Câu đang xem</span></div>
+  <nav class="lms-quiz-nav" aria-label="Chọn nhanh số câu">${q.questions.map((x,i)=>`<button type="button" data-qindex="${i}" aria-label="Câu ${i+1}, ${q.answers[x.uid]?'đã chọn':'chưa chọn'}" aria-current="${q.current===i?'step':'false'}" class="${q.answers[x.uid]?'done':''} ${q.current===i?'current':''}">${i+1}</button>`).join('')}</nav>
+  <div class="lms-card"><div class="lms-question lms-math"><span class="lms-pill">Câu ${q.current+1}</span><div style="margin-top:12px">${apLmsMath(item.question)}</div></div><div class="lms-answer-grid">${item.options.map((v,i)=>{const letter='ABCD'[i];return `<button class="lms-answer ${picked===letter?'selected':''}" type="button" data-answer="${letter}"><b>${letter}</b><span class="lms-math">${apLmsMath(v)}</span></button>`;}).join('')}</div><div class="lms-quiz-controls"><button type="button" class="lms-btn ghost" id="ap-lms-prev" ${q.current===0?'disabled':''}>Câu trước</button><button type="button" class="lms-btn ghost" id="ap-lms-next" ${q.current===n-1?'disabled':''}>Câu tiếp</button><button type="button" class="lms-btn teal lms-submit-lock" id="ap-lms-submit">Nộp bài (${answered}/${n})</button></div><p class="lms-help">Đáp án được lưu tạm trên thiết bị. Máy chủ chỉ công bố kết quả sau khi nộp thành công.</p></div>
+  <dialog id="ap-lms-submit-dialog" class="lms-submit-dialog" aria-labelledby="ap-lms-confirm-title"><div class="lms-confirm-icon"><i class="bi bi-send-check"></i></div><h3 id="ap-lms-confirm-title">Xác nhận nộp bài?</h3><p>${answered<n?`Em còn ${n-answered} câu chưa chọn đáp án. `:'Em đã trả lời đủ các câu. '}Sau khi nộp, hệ thống sẽ chấm điểm và lưu kết quả.</p><div class="lms-dialog-actions"><button type="button" class="lms-btn ghost" id="ap-lms-cancel-submit">Xem lại bài</button><button type="button" class="lms-btn teal lms-submit-lock" id="ap-lms-confirm-submit">Xác nhận nộp</button></div></dialog>`;
   apLmsEl('ap-lms-quiz-back').addEventListener('click',apLmsLoadDashboard);
   apLmsEl('ap-lms-prev').addEventListener('click',()=>{q.current=Math.max(0,q.current-1);apLmsRenderQuiz();});
-  apLmsEl('ap-lms-next').addEventListener('click',()=>{q.current=Math.min(9,q.current+1);apLmsRenderQuiz();});
-  apLmsEl('ap-lms-submit').addEventListener('click',apLmsSubmit);
+  apLmsEl('ap-lms-next').addEventListener('click',()=>{q.current=Math.min(n-1,q.current+1);apLmsRenderQuiz();});
+  apLmsEl('ap-lms-submit').addEventListener('click',apLmsConfirmSubmit);
+  apLmsEl('ap-lms-cancel-submit').addEventListener('click',()=>apLmsEl('ap-lms-submit-dialog').close());
+  apLmsEl('ap-lms-confirm-submit').addEventListener('click',()=>{apLmsEl('ap-lms-submit-dialog').close();apLmsSubmit();});
   apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-qindex]').forEach(b=>b.addEventListener('click',()=>{q.current=Number(b.dataset.qindex);apLmsRenderQuiz();}));
-  apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{q.answers[item.uid]=b.dataset.answer;apLmsSaveDraft();if(q.current<9)q.current++;apLmsRenderQuiz();}));
+  apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{q.answers[item.uid]=b.dataset.answer;apLmsSaveDraft();if(q.current<n-1)q.current++;apLmsRenderQuiz();}));
 }
-async function apLmsSubmit(){if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;const q=AP_LMS_UI.quiz,n=Object.keys(q.answers).length;
-  if(n<10&&!confirm('Em mới chọn '+n+'/10 đáp án. Em có chắc muốn nộp bài?'))return;
-  if(n===10&&!confirm('Em xác nhận nộp bài cấp '+q.level+'?'))return;
+function apLmsConfirmSubmit(){
+  if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;
+  const d=apLmsEl('ap-lms-submit-dialog');if(!d)return;
+  if(typeof d.showModal==='function'){d.showModal();return;}
+  const q=AP_LMS_UI.quiz,remaining=q.questions.length-Object.keys(q.answers).length;
+  if(confirm((remaining?'Còn '+remaining+' câu chưa trả lời. ':'')+'Em xác nhận nộp bài?'))apLmsSubmit();
+}
+function apLmsMotivation_(score){
+  const s=Number(score)||0;
+  if(s>=9)return {title:'Xuất sắc! Em đã chinh phục bài học!',note:'Kiến thức rất vững vàng. Hãy thử thêm một bài mới nhé!',icon:'bi-trophy-fill',celebrate:true};
+  if(s>=7)return {title:'Chúc mừng! Em làm rất tốt!',note:'Sự cố gắng của em đã mang lại kết quả đáng tự hào.',icon:'bi-stars',celebrate:true};
+  if(s>=6)return {title:'Giỏi lắm! Em đã vượt qua!',note:'Hãy ôn lại những câu còn sai để tiến bộ hơn nữa.',icon:'bi-check-circle-fill',celebrate:false};
+  return {title:'Mỗi lần luyện tập là một bước tiến!',note:'Em hãy xem lời giải, ôn lại và thử thêm một lần nhé!',icon:'bi-heart-fill',celebrate:false};
+}
+function apLmsReviewHtml_(q,review){
+  if(!review.length)return '';
+  return `<details class="lms-review-panel"><summary><i class="bi bi-list-check"></i> Xem lại chi tiết câu đúng/sai (${review.length} câu)</summary><div class="lms-review-items">${review.map((x,i)=>{
+    const selected=q.answers[x.uid]||'',correct=selected===x.answer;
+    const ques=q.questions.find(item=>item.uid===x.uid);
+    return `<article class="lms-review-entry ${correct?'correct':'incorrect'}"><div class="lms-review-heading"><strong>Câu ${i+1}</strong><span>${correct?'✓ Đúng':'✕ Chưa đúng'}</span></div>
+      ${ques?`<p class="lms-math">${apLmsMath(ques.question)}</p>`:''}<p>Em chọn: <b>${selected?apLmsEsc(selected):'Chưa chọn'}</b> · Đáp án đúng: <b>${apLmsEsc(x.answer)}</b></p>${x.explanation?`<div class="lms-math">${apLmsMath(x.explanation)}</div>`:''}</article>`;
+  }).join('')}</div></details>`;
+}
+async function apLmsSubmit(){
+  if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;
+  const q=AP_LMS_UI.quiz,n=Object.keys(q.answers).length,total=q.questions.length;
   apLmsBusy(true);apLmsClearError();
   if(q.syncTimer){clearTimeout(q.syncTimer);q.syncTimer=null;}
   try{
-    const r=await apLmsApi('apLmsSubmit',{session_token:AP_LMS_UI.session,attempt_token:q.attemptToken,answers:q.answers},'POST');
-    try{localStorage.removeItem(apLmsDraftKey(q));}catch(e){}
+    const action=q.isAuto?'apLmsAutoSubmit':'apLmsSubmit';
+    const r=await apLmsApi(action,{session_token:AP_LMS_UI.session,attempt_token:q.attemptToken,answers:q.answers},'POST');
+    try{localStorage.removeItem(apLmsDraftKey(q));
+      if(q.isAuto)localStorage.removeItem(apLmsAutoActiveKey_(q.studentId,q.topicId));}catch(e){}
     apLmsScreen('ap-lms-result');
     const review=Array.isArray(r.review)?r.review:[];
-    apLmsEl('ap-lms-result-content').innerHTML=`<div class="lms-card" style="text-align:center"><div class="lms-hero-icon" style="margin:0 auto 12px">${r.passed?'<i class="bi bi-trophy"></i>':'<i class="bi bi-arrow-repeat"></i>'}</div><h2>${r.passed?'Chúc mừng em đã vượt qua!':'Em hãy ôn tập và thử lại nhé!'}</h2><div style="font-size:48px;font-weight:900;color:${r.passed?'#087b72':'#bf6c1e'};margin:10px 0">${r.score}/10</div><p>Cấp ${q.level} · ${r.passed?'Đạt yêu cầu từ 6 điểm':'Chưa đạt mốc 6 điểm'}${r.duplicate?' · Kết quả đã được lưu trước đó':''}</p><div class="lms-actions-inline" style="justify-content:center;margin-top:15px"><button class="lms-btn" type="button" id="ap-lms-home">Về danh sách bài</button>${r.passed&&q.level<3?'<button class="lms-btn teal" type="button" id="ap-lms-nextlevel">Làm cấp tiếp theo</button>':'<button class="lms-btn teal" type="button" id="ap-lms-repeat">Luyện tập lại</button>'}</div></div>
-    ${review.length?`<div class="lms-card"><h3>Đáp án và hướng dẫn sau khi nộp</h3>${review.map((x,i)=>`<div class="lms-review-entry"><strong>Câu ${i+1} (${apLmsEsc(x.uid)})</strong>: Đáp án đúng <b>${apLmsEsc(x.answer)}</b>${x.explanation?`<div class="lms-math" style="margin-top:6px">${apLmsMath(x.explanation)}</div>`:''}</div>`).join('')}</div>`:''}`;
+    const motivation=apLmsMotivation_(r.score);
+    const confetti=motivation.celebrate?`<div class="lms-confetti" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i};left:${3+(i*23)%93}%"></i>`).join('')}</div>`:'';
+    apLmsEl('ap-lms-result-content').innerHTML=`<div class="lms-card lms-celebration" style="text-align:center">${confetti}<div class="lms-hero-icon" style="margin:0 auto 12px"><i class="bi ${motivation.icon}"></i></div><h2>${motivation.title}</h2><p>${motivation.note}</p><div class="lms-score-big">${Number(r.score)}/10</div><p>Đúng ${Number(r.correct_count??0)}/${Number(r.total_count||q.questions.length)} câu · ${r.passed?'Đã đạt yêu cầu':'Cố gắng thêm để đạt từ 6 điểm'}${r.duplicate?' · Kết quả đã lưu trước đó':''}</p><div class="lms-actions-inline" style="justify-content:center;margin-top:15px"><button class="lms-btn ghost" type="button" id="ap-lms-home"><i class="bi bi-grid"></i> Chọn bài khác</button><button class="lms-btn teal" type="button" id="ap-lms-repeat"><i class="bi bi-arrow-clockwise"></i> Làm lại bài này</button>${r.passed&&!q.isAuto&&q.level<3?'<button class="lms-btn" type="button" id="ap-lms-nextlevel">Làm cấp tiếp theo</button>':''}</div></div>
+    ${apLmsReviewHtml_(q,review)}`;
     apLmsEl('ap-lms-home').addEventListener('click',apLmsLoadDashboard);
     if(apLmsEl('ap-lms-nextlevel'))apLmsEl('ap-lms-nextlevel').addEventListener('click',()=>apLmsStart(q.assignmentId,q.level+1));
-    if(apLmsEl('ap-lms-repeat'))apLmsEl('ap-lms-repeat').addEventListener('click',()=>apLmsStart(q.assignmentId,q.level));
+    apLmsEl('ap-lms-repeat').addEventListener('click',()=>q.isAuto?apLmsStartAuto(q.topicId):apLmsStart(q.assignmentId,q.level));
   }catch(e){apLmsError('Chưa xác nhận nộp bài: '+e.message+' Hệ thống giữ bản nháp trên máy, em có thể thử lại.');apLmsSaveDraft();}
   finally{apLmsBusy(false);}
 }
 function apLmsParentSummaryHtml_(lms){
-  if(!lms||!Array.isArray(lms.assignments))return '';
-  const list=lms.assignments.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${apLmsEsc(a.title)}</b><div class="mini-note">${a.exam_code?'Mã: '+apLmsEsc(a.exam_code)+' · ':''}${apLmsEsc(a.chapter||'')} · Cấp 1: ${a.scores[0]===null?'Chưa làm':apLmsEsc(a.scores[0])+'/10'} · Cấp 2: ${a.scores[1]===null?'Chưa làm':apLmsEsc(a.scores[1])+'/10'} · Cấp 3: ${a.scores[2]===null?'Chưa làm':apLmsEsc(a.scores[2])+'/10'}</div></div>`).join('');
-  return `<div class="student-report-section"><div class="student-section-title"><i class="bi bi-mortarboard-fill"></i> Kết quả học LMS (3 cấp độ)</div><div class="student-mini-stats" style="margin-bottom:11px"><div class="student-mini-stat blue"><span>Bài được giao</span><strong>${Number(lms.total||0)}</strong></div><div class="student-mini-stat purple"><span>Hoàn thành</span><strong>${Number(lms.completed||0)}</strong></div><div class="student-mini-stat warn"><span>Chưa hoàn thành</span><strong>${Math.max(0,Number(lms.total||0)-Number(lms.completed||0))}</strong></div></div>${list||'<div class="mini-note">Chưa được giao bài trực tuyến.</div>'}</div>`;
+  if(!lms)return '';
+  const assignments=Array.isArray(lms.assignments)?lms.assignments:[];
+  const list=assignments.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${apLmsEsc(a.title)}</b><div class="mini-note">${a.exam_code?'Mã: '+apLmsEsc(a.exam_code)+' · ':''}${apLmsEsc(a.chapter||'')} · Cấp 1: ${a.scores[0]===null?'Chưa làm':apLmsEsc(a.scores[0])+'/10'} · Cấp 2: ${a.scores[1]===null?'Chưa làm':apLmsEsc(a.scores[1])+'/10'} · Cấp 3: ${a.scores[2]===null?'Chưa làm':apLmsEsc(a.scores[2])+'/10'}</div></div>`).join('');
+  const self=lms.self_study,auto=Array.isArray(self?.recent)?self.recent:[];
+  const autoRows=auto.map(x=>{
+    const top=x.top1;
+    const mins=top?.duration_seconds!=null?Math.floor(Number(top.duration_seconds)/60):0;
+    const secs=top?.duration_seconds!=null?Number(top.duration_seconds)%60:0;
+    const time=top?.duration_seconds!=null?` · ${mins}:${String(secs).padStart(2,'0')}`:'';
+    const ranking=top?`<div class="lms-parent-top1"><i class="bi bi-trophy"></i><span>Top 1 cùng lớp: <b>${apLmsEsc(top.name)}</b> · <b>${Number(top.score)}/10 điểm</b>${time}</span></div>`:'';
+    return `<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${apLmsEsc(x.title)}</b><div class="mini-note">${apLmsEsc(x.chapter||'')} · Điểm cao nhất: ${Number(x.best_score)}/10 · Lần gần nhất: ${Number(x.last_score)}/10 · Số lượt: ${Number(x.attempts)}</div>${ranking}</div>`;
+  }).join('');
+  return `<div class="student-report-section"><div class="student-section-title"><i class="bi bi-mortarboard-fill"></i> Kết quả học tập LMS</div>
+    <div class="student-mini-stats" style="margin-bottom:11px"><div class="student-mini-stat blue"><span>Chủ đề tự luyện</span><strong>${Number(self?.total_topics||0)}</strong></div><div class="student-mini-stat purple"><span>Đã đạt từ 6 điểm</span><strong>${Number(self?.passed_topics||0)}</strong></div><div class="student-mini-stat warn"><span>Bài GV giao</span><strong>${Number(lms.total||0)}</strong></div></div>
+    <h4>Tự luyện theo chương/bài</h4>${autoRows||'<div class="mini-note">Học sinh chưa tự luyện trên LMS.</div>'}
+    ${assignments.length?'<h4 style="margin-top:14px">Bài giáo viên đã giao trước đây</h4>'+list:''}</div>`;
 }
 // Teacher: module manager, import and duplicates ------------------------------------
 const AP_LMS_ADMIN={catalog:[],importing:false,connectionPending:false,statusLoadSeq:0};

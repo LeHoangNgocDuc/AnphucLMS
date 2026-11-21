@@ -1529,10 +1529,10 @@ p,li,.chat-bubble { text-wrap:pretty; }
   <!-- Export bảng điểm: SheetJS & html2canvas, tự tải trước khi sử dụng -->
   <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<link rel="stylesheet" href="lms.css">
+<link rel="stylesheet" href="lms.css?v=20261122-161">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-  <script defer src="lms.js?v=20261122-153"></script>
+  <script defer src="lms.js?v=20261122-161"></script>
 </head>
 <body>
 
@@ -1568,7 +1568,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
         <div class="role-icon"><i class="bi bi-mortarboard"></i></div>
         <span class="role-audience">CỔNG HỌC TẬP</span>
         <h2>Học sinh</h2>
-        <p>Đăng nhập bằng họ tên và số điện thoại đã đăng ký, chọn bài đúng khối, luyện tập ba cấp độ và xem điểm.</p>
+        <p>Đăng nhập bằng họ tên và số điện thoại đã đăng ký, chọn bài đúng khối, tự chọn chương, bài; làm tối đa 10 câu và xem điểm.</p>
         <button class="role-entry-btn" type="button">Vào học <i class="bi bi-arrow-right"></i></button>
       </article>
     </div>
@@ -2446,7 +2446,7 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
   // ============================================
   // CẤU HÌNH API - LIÊN KẾT VỚI GOOGLE SHEET
   // ============================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwbryuCUGiTiisVPItyaao3RnEZ40JrrbKYfju5d3L6TXnnj9h1ycLPmRwiv6LDHZqSNw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbw0L5RchxQ6e-35Ky9KuFwoDBh5JP0PwjHgn0NagGD6Np8HgmKn5zhKXiJfHNSjAPcAuw/exec";
   const FRONTEND_VERSION = 'V4.27';
   const CENTER_INFO = {
     address: '30/11D Phước Tường, Phước Long, Nam Nha Trang',
