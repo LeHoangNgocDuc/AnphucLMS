@@ -235,7 +235,14 @@ async function apLmsConnectBank(){
   const originalLabel=button?button.textContent:'';
   if(button){button.disabled=true;button.textContent='Đang kết nối...';}
   try{
-    apLmsBankFeedback('Đang gửi yêu cầu kết nối đến Apps Script (tối đa khoảng 32 giây). Không cần tải lại trang.','working');
+    // A stale Code.gs can expose a valid V1.5 student diagnostic while still
+    // omitting the newer admin POST action. Check the exact capability first.
+    apLmsBankFeedback('Đang kiểm tra bộ định tuyến ngân hàng trên Apps Script...','working');
+    const diag=await apLmsApi('apLmsPublicDiagnostics',{},'GET',false);
+    if(!diag||!diag.capabilities||diag.capabilities.bank_connect!==true){
+      throw new Error('LMS_ROUTER_OUTDATED: Backend chưa xác nhận hỗ trợ apLmsConnectBank. Hãy cập nhật Code.gs trong đúng dự án Apps Script, rồi Deploy > Manage deployments > Edit > New version > Deploy.');
+    }
+    apLmsBankFeedback('Đã xác nhận endpoint kết nối. Đang gửi yêu cầu đến Apps Script...','working');
     const result=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id,confirm_switch:!!switching},'POST',true);
     apLmsBankFeedback('Backend đã nhận yêu cầu. Đang xác minh ID được lưu trên máy chủ...','working');
     const verified=await apLmsApi('apLmsBankStatus',{},'GET',true);
@@ -251,6 +258,8 @@ async function apLmsConnectBank(){
     if(rejected.length)apLmsBankFeedback('Đã kết nối thành công nhưng chưa tải đủ dữ liệu quản trị: '+rejected.join('; '),'warning');
   }catch(error){
     let message=String(error.message||error);
+    if(/ACTION_NOT_FOUND:\s*apLmsConnectBank|LMS_ENDPOINT_NOT_DEPLOYED.*apLmsConnectBank/.test(message))
+      message='LMS_ROUTER_OUTDATED: Code.gs trên Apps Script đang chạy chưa định tuyến apLmsConnectBank. Cập nhật Code.gs từ bản vá V1.5.2 và triển khai New version trên đúng URL /exec.';
     if(/BANK_ACCESS_DENIED/.test(message))message+=' Hãy mở bảng tính bằng tài khoản được dùng để triển khai Apps Script, bảo đảm tài khoản đó có quyền chỉnh sửa.';
     else if(/UNAUTHORIZED/.test(message))message+=' Phiên GV có thể hết hạn. Đăng nhập lại trước khi thử.';
     else if(/BANK_SAME_AS_CENTER/.test(message))message+=' Không dùng file quản lý học sinh làm ngân hàng.';
