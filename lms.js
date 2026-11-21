@@ -21,7 +21,7 @@ function apLmsMath(text){
 async function apLmsApi(action,params={},method='GET',admin=false){
   const payload={action,...params,_client_id:(typeof getSecurityClientId==='function'?getSecurityClientId():'ap_lms_anon')};
   if(admin){if(typeof getAdminToken!=='function'||!getAdminToken())throw new Error('Cần đăng nhập Giáo viên trước.');payload._auth_token=getAdminToken();}
-  const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),(action==='apLmsImportStageBatch'||action==='apLmsImportFinalize')?100000:32000);
+  const ctrl=new AbortController();const timeout=setTimeout(()=>ctrl.abort(),(['apLmsImportStageBatch','apLmsImportFinalize','apLmsAIGenerate','apLmsAIRegenerateDraft'].includes(action))?110000:32000);
   let response;
   try{
     const url=method==='GET'?API_URL+'?'+new URLSearchParams({...payload,_t:String(Date.now())}).toString():API_URL;
@@ -53,7 +53,7 @@ function apLmsExit(){
   apLmsEl('ap-lms-app').hidden=true;apLmsEl('ap-lms-app').style.display='none';
   if(typeof showLandingMode==='function')showLandingMode();
 }
-function apLmsLogout(){AP_LMS_UI.session='';AP_LMS_UI.student=null;AP_LMS_UI.quiz=null;sessionStorage.removeItem('ap_lms_student_token');apLmsClearError();apLmsScreen('ap-lms-login');apLmsEl('ap-lms-name').value='';apLmsEl('ap-lms-phone').value='';apLmsEl('ap-lms-candidates').innerHTML='';AP_LMS_UI.candidate=null;}
+function apLmsLogout(){if(AP_LMS_UI.quiz?.syncTimer)clearTimeout(AP_LMS_UI.quiz.syncTimer);AP_LMS_UI.session='';AP_LMS_UI.student=null;AP_LMS_UI.quiz=null;sessionStorage.removeItem('ap_lms_student_token');apLmsClearError();apLmsScreen('ap-lms-login');apLmsEl('ap-lms-name').value='';apLmsEl('ap-lms-phone').value='';apLmsEl('ap-lms-candidates').innerHTML='';AP_LMS_UI.candidate=null;}
 function apLmsNameSearch(){
   clearTimeout(AP_LMS_UI.queryTimer);AP_LMS_UI.candidate=null;apLmsClearError();const val=apLmsEl('ap-lms-name').value.trim();
   apLmsEl('ap-lms-selected').textContent='';const box=apLmsEl('ap-lms-candidates');box.innerHTML='';
@@ -82,17 +82,22 @@ async function apLmsLogin(event){
   }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
 }
 let AP_LMS_BACKEND_CHECKED_AT=0;
+let AP_LMS_BACKEND_CAPABILITIES={};
 async function apLmsCheckBackend(){
   if(Date.now()-AP_LMS_BACKEND_CHECKED_AT<180000)return true;
   let cap;
   try{cap=await apLmsApi('apLmsPublicDiagnostics',{},'GET',false);}
   catch(e){
-    throw new Error('LMS_BACKEND_MISMATCH: Web và Apps Script chưa đồng bộ V1.4. Giáo viên cần cập nhật Code.gs, Module_LMS.gs, Module_LMSBank.gs và Deploy New Version trên deployment hiện tại. Chi tiết: '+e.message);
+    // A stale /exec deployment routes unknown actions to the teacher gate.
+    throw new Error('LMS_BACKEND_MISMATCH: Deployment Apps Script tại API_URL chưa có endpoint chẩn đoán công khai hoặc chưa được cấp quyền. Cập nhật Code.gs cùng Module_LMS.gs; Deploy > Manage deployments > Edit > New version. API trả về: '+e.message);
   }
-  if(!cap||cap.backend!=='ANPHUC_LMS_V1_4'||cap.public_lms!==true)
-    throw new Error('LMS_BACKEND_MISMATCH: Apps Script đang chạy thiếu API cổng học sinh V1.4 hoặc thiếu Module_LMS.gs. Hãy cập nhật deployment.');
-  AP_LMS_BACKEND_CHECKED_AT=Date.now();
-  return true;
+  const required=['student_login','student_dashboard','student_start','student_submit'];
+  const missing=cap&&cap.capabilities?required.filter(k=>cap.capabilities[k]!==true):[];
+  if(!cap||cap.public_lms!==true||missing.length)
+    throw new Error('LMS_BACKEND_MISMATCH: Backend hiện thiếu API học sinh: '+(missing.join(', ')||'apLmsPhoneLogin/apLmsDashboard/apLmsStart/apLmsSubmit')+'. Hãy triển khai đầy đủ Module_LMS.gs lên đúng deployment /exec.');
+  // Do not hard-block a usable backend only because its cosmetic version changed.
+  AP_LMS_BACKEND_CAPABILITIES=cap.capabilities||{};
+  AP_LMS_BACKEND_CHECKED_AT=Date.now();return true;
 }
 function apLmsDate(value){if(!value)return '';const d=new Date(value);return Number.isFinite(d.valueOf())?d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):String(value);}
 async function apLmsLoadDashboard(){
@@ -114,12 +119,29 @@ async function apLmsLoadDashboard(){
   }
 }
 function apLmsDraftKey(q){return 'ap_lms_draft_v2_'+q.studentId+'_'+q.assignmentId+'_'+q.level;}
-function apLmsSaveDraft(){const q=AP_LMS_UI.quiz;if(!q)return;try{localStorage.setItem(apLmsDraftKey(q),JSON.stringify({answers:q.answers,updated:Date.now()}));}catch(e){}}
+function apLmsQueueServerDraft(q){
+  if(!q||q.syncTimer||AP_LMS_BACKEND_CAPABILITIES.student_draft!==true)return;
+  // Random jitter prevents 40 clients from syncing all at the same moment.
+  q.syncTimer=setTimeout(async()=>{
+    q.syncTimer=null;
+    if(AP_LMS_UI.quiz!==q||!AP_LMS_UI.session)return;
+    const answers={...q.answers};
+    try{await apLmsApi('apLmsSaveDraft',{session_token:AP_LMS_UI.session,assignment_id:q.assignmentId,level:q.level,answers},'POST');
+      q.lastServerSync=Date.now();
+      if(JSON.stringify(answers)!==JSON.stringify(q.answers))apLmsQueueServerDraft(q);
+    }catch(e){console.info('[LMS draft] Local copy retained, server sync delayed:',e.message);}
+  },45000+Math.round(Math.random()*20000));
+}
+function apLmsSaveDraft(){const q=AP_LMS_UI.quiz;if(!q)return;try{localStorage.setItem(apLmsDraftKey(q),JSON.stringify({answers:q.answers,updated:Date.now()}));}catch(e){}apLmsQueueServerDraft(q);}
 async function apLmsStart(assignmentId,level){if(AP_LMS_UI.busy)return;apLmsBusy(true);apLmsClearError();
   try{const a=await apLmsApi('apLmsStart',{session_token:AP_LMS_UI.session,assignment_id:assignmentId,level});
     if(!a.questions||a.questions.length!==10)throw new Error('Bài tập chưa có đủ 10 câu.');
     const q={assignmentId,level,attemptToken:a.attempt_token,questions:a.questions,answers:{},current:0,title:a.title,studentId:AP_LMS_UI.student.student_id||AP_LMS_UI.student.id||''};
-    try{const raw=JSON.parse(localStorage.getItem(apLmsDraftKey(q))||'null');if(raw&&raw.answers)q.answers=Object.fromEntries(Object.entries(raw.answers).filter(([uid,ans])=>a.questions.some(x=>x.uid===uid)&&['A','B','C','D'].includes(ans)));}catch(e){}
+    try{const raw=JSON.parse(localStorage.getItem(apLmsDraftKey(q))||'null');
+      const server=a.server_draft,serverAt=Date.parse(server?.updated_at||'')||0;
+      const chosen=(server&&server.answers&&serverAt>Number(raw?.updated||0))?server.answers:raw?.answers;
+      if(chosen)q.answers=Object.fromEntries(Object.entries(chosen).filter(([uid,ans])=>a.questions.some(x=>x.uid===uid)&&['A','B','C','D'].includes(ans)));
+    }catch(e){}
     AP_LMS_UI.quiz=q;apLmsScreen('ap-lms-quiz');apLmsRenderQuiz();
   }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
 }
@@ -139,6 +161,7 @@ async function apLmsSubmit(){if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;const q=A
   if(n<10&&!confirm('Em mới chọn '+n+'/10 đáp án. Em có chắc muốn nộp bài?'))return;
   if(n===10&&!confirm('Em xác nhận nộp bài cấp '+q.level+'?'))return;
   apLmsBusy(true);apLmsClearError();
+  if(q.syncTimer){clearTimeout(q.syncTimer);q.syncTimer=null;}
   try{
     const r=await apLmsApi('apLmsSubmit',{session_token:AP_LMS_UI.session,attempt_token:q.attemptToken,answers:q.answers},'POST');
     try{localStorage.removeItem(apLmsDraftKey(q));}catch(e){}
@@ -154,7 +177,7 @@ async function apLmsSubmit(){if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;const q=A
 }
 function apLmsParentSummaryHtml_(lms){
   if(!lms||!Array.isArray(lms.assignments))return '';
-  const list=lms.assignments.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${apLmsEsc(a.title)}</b><div class="mini-note">${apLmsEsc(a.chapter||'')} · Cấp 1: ${a.scores[0]===null?'Chưa làm':apLmsEsc(a.scores[0])+'/10'} · Cấp 2: ${a.scores[1]===null?'Chưa làm':apLmsEsc(a.scores[1])+'/10'} · Cấp 3: ${a.scores[2]===null?'Chưa làm':apLmsEsc(a.scores[2])+'/10'}</div></div>`).join('');
+  const list=lms.assignments.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #e2e8f0"><b>${apLmsEsc(a.title)}</b><div class="mini-note">${a.exam_code?'Mã: '+apLmsEsc(a.exam_code)+' · ':''}${apLmsEsc(a.chapter||'')} · Cấp 1: ${a.scores[0]===null?'Chưa làm':apLmsEsc(a.scores[0])+'/10'} · Cấp 2: ${a.scores[1]===null?'Chưa làm':apLmsEsc(a.scores[1])+'/10'} · Cấp 3: ${a.scores[2]===null?'Chưa làm':apLmsEsc(a.scores[2])+'/10'}</div></div>`).join('');
   return `<div class="student-report-section"><div class="student-section-title"><i class="bi bi-mortarboard-fill"></i> Kết quả học LMS (3 cấp độ)</div><div class="student-mini-stats" style="margin-bottom:11px"><div class="student-mini-stat blue"><span>Bài được giao</span><strong>${Number(lms.total||0)}</strong></div><div class="student-mini-stat purple"><span>Hoàn thành</span><strong>${Number(lms.completed||0)}</strong></div><div class="student-mini-stat warn"><span>Chưa hoàn thành</span><strong>${Math.max(0,Number(lms.total||0)-Number(lms.completed||0))}</strong></div></div>${list||'<div class="mini-note">Chưa được giao bài trực tuyến.</div>'}</div>`;
 }
 // Teacher: module manager, import and duplicates ------------------------------------
@@ -169,7 +192,7 @@ async function apLmsLoadAdmin(){
     if(st.configured && st.bank_id){apLmsEl('ap-lms-bank-id').value=st.bank_id;}
     apLmsEl('ap-lms-bank-summary').textContent=st.configured?`Đã kết nối · ${Number(st.count||0).toLocaleString('vi-VN')} câu · ${Number(st.ready||0).toLocaleString('vi-VN')} câu READY · Ngân hàng: ...${apLmsEsc(st.bank_id.slice(-6))}`:'Chưa kết nối ngân hàng. Hãy tạo ngân hàng mới hoặc nhập ID Google Sheets riêng.';
     if(st.bank_url){apLmsEl('ap-lms-bank-link').href=st.bank_url;apLmsEl('ap-lms-bank-link').hidden=false;}else{apLmsEl('ap-lms-bank-link').hidden=true;}
-    if(st.configured){await apLmsLoadCatalog();await apLmsLoadAssignments();}apLmsAdminMsg('Sẵn sàng.');
+    if(st.configured){await apLmsLoadCatalog();await apLmsLoadAssignments();await apLmsAILoadStatus();}apLmsAdminMsg('Sẵn sàng.');
   }catch(e){apLmsAdminMsg(e.message);}
 }
 async function apLmsNewBank(){if(!confirm('Tạo Google Spreadsheet ngân hàng riêng, không thay đổi bảng tính trung tâm?'))return;
@@ -196,15 +219,16 @@ async function apLmsLoadCatalog(){
   const current=grade.value;const grades=[...new Set(AP_LMS_ADMIN.catalog.map(x=>String(x.grade)))].sort((a,b)=>Number(a)-Number(b));
   grade.innerHTML='<option value="">Chọn khối</option>'+grades.map(g=>`<option value="${apLmsEsc(g)}">Khối ${apLmsEsc(g)}</option>`).join('');
   if(grades.includes(current))grade.value=current;
-  apLmsSetChapter();apLmsEl('ap-lms-catalog-info').textContent=`${AP_LMS_ADMIN.catalog.length} nhóm khối–chương đủ 10 câu ở cả 3 cấp. Những nhóm thiếu câu chưa thể giao thành bài 3 cấp.`;
+  apLmsSetChapter();const eligible=AP_LMS_ADMIN.catalog.filter(x=>x.counts.every(n=>n>=10)).length;
+  apLmsEl('ap-lms-catalog-info').textContent=`${AP_LMS_ADMIN.catalog.length} nhóm khối–chương có câu READY; ${eligible} nhóm đã đủ 10 câu/cấp. Nhóm còn thiếu có thể bổ sung qua AI rồi duyệt.`;
 }
 function apLmsSetChapter(){const g=apLmsEl('ap-lms-assignment-grade').value,select=apLmsEl('ap-lms-assignment-chapter'),old=select.value;const rows=AP_LMS_ADMIN.catalog.filter(x=>String(x.grade)===g);
   select.innerHTML='<option value="">Chọn chương</option><option value="THEO_ID">Tạo theo ID (nhiều chương)</option>'+rows.map(x=>`<option value="${apLmsEsc(x.chapter)}">${apLmsEsc(x.chapter)} (${x.counts.join('/')})</option>`).join('');if(rows.some(x=>x.chapter===old))select.value=old;
 }
 async function apLmsLoadAssignments(){
   const rows=await apLmsApi('apLmsAdminAssignments',{},'GET',true);
-  const selector=apLmsEl('ap-lms-results-assignment');selector.innerHTML='<option value="">Chọn bài cần xem điểm</option>'+rows.map(a=>`<option value="${apLmsEsc(a.assignment_id)}">${apLmsEsc(a.title)} · K${apLmsEsc(a.grade)}</option>`).join('');
-  apLmsEl('ap-lms-admin-assignments').innerHTML=rows.length?`<div class="lms-admin-tablewrap"><table><thead><tr><th>Bài tập</th><th>Khối</th><th>Lớp</th><th>Hạn nộp</th><th>ID bài</th></tr></thead><tbody>${rows.slice(0,30).map(x=>`<tr><td>${apLmsEsc(x.title)}</td><td>${apLmsEsc(x.grade)}</td><td>${apLmsEsc(x.class_id||'Toàn khối')}</td><td>${apLmsEsc(apLmsDate(x.due_at))}</td><td><code>${apLmsEsc(x.assignment_id)}</code></td></tr>`).join('')}</tbody></table></div>`:'<p>Chưa giao bài LMS nào.</p>';
+  const selector=apLmsEl('ap-lms-results-assignment');selector.innerHTML='<option value="">Chọn bài cần xem điểm</option>'+rows.map(a=>`<option value="${apLmsEsc(a.assignment_id)}">${apLmsEsc(a.exam_code||a.assignment_id)} · ${apLmsEsc(a.title)} · K${apLmsEsc(a.grade)}</option>`).join('');
+  apLmsEl('ap-lms-admin-assignments').innerHTML=rows.length?`<div class="lms-admin-tablewrap"><table><thead><tr><th>Bài tập</th><th>Khối</th><th>Lớp</th><th>Hạn nộp</th><th>Mã đề tự tạo</th><th>ID nội bộ</th></tr></thead><tbody>${rows.slice(0,30).map(x=>`<tr><td>${apLmsEsc(x.title)}</td><td>${apLmsEsc(x.grade)}</td><td>${apLmsEsc(x.class_id||'Toàn khối')}</td><td>${apLmsEsc(apLmsDate(x.due_at))}</td><td><strong>${apLmsEsc(x.exam_code||'Mã cũ')}</strong></td><td><code>${apLmsEsc(x.assignment_id)}</code></td></tr>`).join('')}</tbody></table></div>`:'<p>Chưa giao bài LMS nào.</p>';
 }
 function apLmsNormalizeImportRow(r,source,row){
   const value=(...names)=>{for(const name of names){if(Object.prototype.hasOwnProperty.call(r,name)&&r[name]!=null)return String(r[name]).trim();}return '';};
@@ -302,14 +326,149 @@ async function apLmsFindQuestions(){
 }
 async function apLmsCreateAssignment(){
   const grade=apLmsEl('ap-lms-assignment-grade').value,rawChapter=apLmsEl('ap-lms-assignment-chapter').value,chapter=rawChapter==='THEO_ID'?'Bài tập theo ID':rawChapter;
-  const p={grade,chapter,title:apLmsEl('ap-lms-assignment-title').value,class_id:apLmsEl('ap-lms-assignment-class').value, due_at:apLmsEl('ap-lms-assignment-due').value,...Object.fromEntries([1,2,3].map(i=>['level'+i+'_ids',apLmsEl('ap-lms-ids-'+i).value]))};
-  if(!grade||!chapter){apLmsAdminMsg('Cần chọn khối và chương (hoặc Tạo theo ID) trước khi giao.');return;}
+  const p={grade,chapter,title:apLmsEl('ap-lms-assignment-title').value,class_id:apLmsEl('ap-lms-assignment-class').value,due_at:apLmsEl('ap-lms-assignment-due').value,
+    chapter_number:apLmsEl('ap-lms-assignment-chapter-number')?.value||'',...Object.fromEntries([1,2,3].map(i=>['level'+i+'_ids',apLmsEl('ap-lms-ids-'+i).value]))};
+  if(!grade||!chapter){apLmsAdminMsg('Chọn khối và chương (hoặc Tạo theo ID).');return;}
   if(!confirm('Giao bài 3 cấp, mỗi cấp 10 câu, đạt 6 điểm để mở cấp tiếp theo?'))return;
-  try{apLmsAdminMsg('Đang tạo sẵn 3 gói đề cho học sinh...');const d=await apLmsApi('apLmsCreateAssignment',p,'POST',true);apLmsAdminMsg('Đã giao bài '+d.title+' · ID '+d.assignment_id+' · 10 câu/cấp.');await apLmsLoadAssignments();}
-  catch(e){apLmsAdminMsg(e.message);}
+  const serialized=JSON.stringify(p);
+  const previous=AP_LMS_ADMIN.createRequest;
+  if(!previous||previous.serialized!==serialized){
+    const id='REQ-'+(window.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2));
+    AP_LMS_ADMIN.createRequest={serialized,id};
+  }
+  p.request_id=AP_LMS_ADMIN.createRequest.id;
+  const btn=apLmsEl('ap-lms-create-btn');if(btn)btn.disabled=true;
+  try{apLmsAdminMsg('Đang tạo gói đề và mã ExamCode, vui lòng không bấm lặp...');
+    const d=await apLmsApi('apLmsCreateAssignment',p,'POST',true);
+    AP_LMS_ADMIN.createRequest=null;
+    apLmsAdminMsg('Đã giao bài '+d.title+' · Mã đề '+d.exam_code+' · ID '+d.assignment_id+(d.duplicate?' (yêu cầu được nhận diện là trùng, không tạo bài mới)':'')+'.');
+    await apLmsLoadAssignments();
+  }catch(e){apLmsAdminMsg(e.message+' · Nếu mạng bị ngắt, bấm lại sẽ giữ nguyên mã yêu cầu, tránh tạo trùng.');}
+  finally{if(btn)btn.disabled=false;}
 }
 async function apLmsLoadResults(){const id=apLmsEl('ap-lms-results-assignment').value;if(!id)return;
   try{const r=await apLmsApi('apLmsAdminResults',{assignment_id:id},'GET',true);
     apLmsEl('ap-lms-admin-results').innerHTML=`<div class="lms-admin-tablewrap"><table><thead><tr><th>Học sinh</th><th>Lớp</th><th>Cấp 1</th><th>Cấp 2</th><th>Cấp 3</th><th>Tiến độ</th></tr></thead><tbody>${r.students.map(s=>`<tr><td>${apLmsEsc(s.name)}</td><td>${apLmsEsc(s.class_id)}</td>${s.scores.map(v=>`<td>${v===null?'--':v+'/10'}</td>`).join('')}<td>${s.passed_all?'Hoàn thành':'Chưa hoàn thành'}</td></tr>`).join('')}</tbody></table></div>`;
   }catch(e){apLmsAdminMsg(e.message);}
+}
+
+// ================== LMS V1.5 | teacher AI question studio ==================
+const AP_LMS_AI_STATE={drafts:[],busy:false};
+function apLmsAINotice(value){
+  const e=apLmsEl('ap-lms-ai-notice');if(e)e.textContent=String(value||'');
+}
+async function apLmsAILoadStatus(){
+  const e=apLmsEl('ap-lms-ai-status');if(!e)return;
+  try{
+    const cap=await apLmsApi('apLmsAIStatus',{},'GET',true);
+    e.textContent=(cap.key_configured?'Đã cấu hình Gemini':'Chưa có API key Gemini')+' · Model: '+cap.model+' · '+cap.help;
+    if(cap.bank_connected)await apLmsAIListDrafts();
+  }catch(error){e.textContent='AI_MODULE_NOT_READY: '+error.message+'. Hãy cập nhật Module_LMSAI.gs và Deploy New Version trước khi sử dụng.';}
+}
+function apLmsAIInput(){
+  const get=id=>String(apLmsEl('ap-lms-ai-'+id)?.value||'').trim();
+  return {grade:get('grade'),chapter:get('chapter'),topic:get('topic'),book:get('book'),
+    level:Number(get('level')),count:Number(get('count')),objectives:get('objectives'),source_reference:get('source')};
+}
+function apLmsAIDisplayDrafts(){
+  const target=apLmsEl('ap-lms-ai-drafts');if(!target)return;
+  const drafts=AP_LMS_AI_STATE.drafts;
+  if(!drafts.length){target.innerHTML='<p class="lms-note">Chưa có câu nháp. Hãy chọn khối, chủ đề và tạo nội dung AI trước.</p>';return;}
+  const editable=['Grade','Chapter','Topic','LMS_Level','Question','A','B','C','D','CorrectAnswer','Explanation','SourceReference'];
+  const fields=(d)=>editable.map(k=>{
+    const value=String(d[k]??'');
+    if(k==='CorrectAnswer')return `<label>Đáp án đúng<select data-field="${k}">${['A','B','C','D'].map(a=>`<option value="${a}" ${value===a?'selected':''}>${a}</option>`).join('')}</select></label>`;
+    if(k==='Grade')return `<label>Khối<select data-field="${k}">${['6','7','8','9'].map(a=>`<option value="${a}" ${value===a?'selected':''}>${a}</option>`).join('')}</select></label>`;
+    if(k==='LMS_Level')return `<label>Cấp<select data-field="${k}">${[1,2,3].map(a=>`<option value="${a}" ${Number(value)===a?'selected':''}>${a}</option>`).join('')}</select></label>`;
+    const big=['Question','Explanation','SourceReference'].includes(k);
+    return `<label class="${big?'full':''}">${apLmsEsc(({Chapter:'Chương',Topic:'Bài học',Question:'Câu hỏi',Explanation:'Lời giải',SourceReference:'Nguồn tài liệu'}[k]||'Phương án '+k))}<textarea data-field="${k}" rows="${big?3:2}">${apLmsEsc(value)}</textarea></label>`;
+  }).join('');
+  target.innerHTML=drafts.map((d,i)=>{
+    const status=String(d.Status||'DRAFT_AI'),locked=['APPROVED','REJECTED','SUPERSEDED'].includes(status);
+    const action=locked?'':`<div class="lms-ai-draft-actions">
+      <button class="lms-admin-btn alt" type="button" data-ai-action="save">Lưu chỉnh sửa</button>
+      <button class="lms-admin-btn green" type="button" data-ai-action="approve">Duyệt → READY</button>
+      <button class="lms-admin-btn alt" type="button" data-ai-action="regenerate">AI tạo lại câu này</button>
+      <button class="lms-admin-btn alt" type="button" data-ai-action="reject">Loại câu</button>
+    </div>`;
+    const opts=['A','B','C','D'].map(k=>`<div><b>${k}.</b> ${apLmsMath(d[k])}</div>`).join('');
+    return `<article class="lms-ai-draft" data-draft-id="${apLmsEsc(d.DraftID)}">
+      <div class="lms-ai-draft-head"><strong>Câu ${i+1} · ${apLmsEsc(d.QuestionUID)} · Cấp ${apLmsEsc(d.LMS_Level)}</strong>
+        <span class="lms-ai-tag ${status==='REVIEW'?'review':status==='APPROVED'?'approved':''}">${apLmsEsc(status)}</span></div>
+      <div class="lms-ai-preview"><div><b>${apLmsMath(d.Question)}</b></div>${opts}
+        <div style="margin-top:8px;color:#047857"><b>Đáp án ${apLmsEsc(d.CorrectAnswer)}</b> · ${apLmsMath(d.Explanation)}</div></div>
+      ${d.ReviewNotes?`<p class="lms-note">${apLmsEsc(d.ReviewNotes)}</p>`:''}
+      ${locked?'<p class="lms-ai-help">Đã khóa bản nháp để lưu lịch sử duyệt. Muốn thay đổi câu đã READY cần phiên bản mới và quy trình duyệt riêng.</p>':`<details><summary>Chỉnh sửa câu hỏi và đáp án trước khi duyệt</summary><div class="lms-ai-edit-grid">${fields(d)}</div></details>${action}`}
+    </article>`;
+  }).join('');
+}
+async function apLmsAIListDrafts(){
+  try{
+    const grade=apLmsEl('ap-lms-ai-grade')?.value||'';
+    const data=await apLmsApi('apLmsAIListDrafts',{grade},'GET',true);
+    AP_LMS_AI_STATE.drafts=Array.isArray(data)?data:[];
+    apLmsAIDisplayDrafts();
+  }catch(e){apLmsAINotice('AI_DRAFT_LOAD_ERROR: '+e.message);}
+}
+async function apLmsAIGenerate(){
+  if(AP_LMS_AI_STATE.busy)return;
+  const args=apLmsAIInput();
+  if(!args.chapter||!args.topic){apLmsAINotice('Hãy nhập chương và tên bài/chủ đề trước.');return;}
+  const btn=apLmsEl('ap-lms-ai-generate-btn');AP_LMS_AI_STATE.busy=true;if(btn)btn.disabled=true;
+  apLmsAINotice('Đang yêu cầu Gemini tạo '+args.count+' câu hỏi có đáp án và lời giải. Không gửi dữ liệu học sinh cho AI...');
+  try{
+    const r=await apLmsApi('apLmsAIGenerate',args,'POST',true);
+    apLmsAINotice('AI đã tạo '+r.created+' bản nháp · '+r.review+' câu nghi trùng cần rà soát. Giáo viên kiểm tra kỹ trước khi duyệt.');
+    await apLmsAIListDrafts();
+  }catch(e){apLmsAINotice('AI_CREATE_ERROR: '+e.message);}
+  finally{AP_LMS_AI_STATE.busy=false;if(btn)btn.disabled=false;}
+}
+function apLmsAICollectDraftFields(card){
+  const result={};card.querySelectorAll('[data-field]').forEach(x=>result[x.dataset.field]=x.value);
+  return result;
+}
+async function apLmsAIHandleDraftAction(e){
+  const btn=e.target.closest('[data-ai-action]');if(!btn||AP_LMS_AI_STATE.busy)return;
+  const card=btn.closest('[data-draft-id]');if(!card)return;
+  const draftId=card.dataset.draftId,action=btn.dataset.aiAction;
+  if(action==='approve'&&!confirm('Tôi đã kiểm tra độc lập đáp án, lời giải và độ phù hợp chương trình của câu này. Công bố READY?'))return;
+  if(action==='reject'&&!confirm('Loại câu nháp nhưng vẫn giữ lịch sử?'))return;
+  if(action==='regenerate'&&!confirm('Sinh câu thay thế bằng Gemini? Bản nháp cũ sẽ được lưu lịch sử.'))return;
+  const endpoints={save:'apLmsAISaveDraft',approve:'apLmsAIApproveDraft',reject:'apLmsAIRejectDraft',regenerate:'apLmsAIRegenerateDraft'};
+  if(!endpoints[action])return;
+  AP_LMS_AI_STATE.busy=true;btn.disabled=true;
+  const params={draft_id:draftId};
+  if(action==='save')Object.assign(params,apLmsAICollectDraftFields(card));
+  if(action==='approve')params.confirm_review=true;
+  if(action==='regenerate')Object.assign(params,{book:apLmsAIInput().book,objectives:apLmsAIInput().objectives});
+  apLmsAINotice('Đang thực hiện: '+action+'...');
+  try{
+    const r=await apLmsApi(endpoints[action],params,'POST',true);
+    apLmsAINotice('Hoàn tất '+action+' · '+(r.question_uid||r.draft_id||r.created||'')+'.');
+    await apLmsAIListDrafts();
+    if(action==='approve'){
+      await apLmsLoadCatalog();
+      const info=AP_LMS_AI_STATE.drafts.find(x=>x.DraftID===draftId);
+      if(info){const gr=apLmsEl('ap-lms-assignment-grade');gr.value=String(info.Grade);
+        apLmsSetChapter();apLmsEl('ap-lms-assignment-chapter').value=String(info.Chapter);}
+    }
+  }catch(error){apLmsAINotice('AI_'+action.toUpperCase()+'_ERROR: '+error.message);}
+  finally{AP_LMS_AI_STATE.busy=false;btn.disabled=false;}
+}
+// Event delegation avoids new globals per draft and keeps inline legacy handlers intact.
+document.addEventListener('click',function(event){
+  if(event.target.closest('#ap-lms-ai-drafts [data-ai-action]'))apLmsAIHandleDraftAction(event);
+});
+
+async function apLmsRunDiagnostics(){
+  try{
+    const d=await apLmsApi('apLmsPublicDiagnostics',{},'GET',false);
+    const missing=Object.entries(d.capabilities||{}).filter(([,ok])=>!ok).map(([name])=>name);
+    const note='API_URL /exec: '+(d.backend||'không rõ phiên bản')+' | LMS công khai: '+(d.public_lms?'Có':'Không')+' | AI: '+(d.ai_module?'Đã cài':'Chưa cài')+' | Thiếu: '+(missing.join(', ')||'Không');
+    apLmsAdminMsg(note);
+    const el=apLmsEl('ap-lms-diagnostics-result');if(el)el.textContent=note;
+  }catch(e){
+    const note='LMS_BACKEND_MISMATCH: '+e.message+' · Kiểm tra API_URL trong index.html và Apps Script Manage deployments → Edit → New version.';
+    apLmsAdminMsg(note);const el=apLmsEl('ap-lms-diagnostics-result');if(el)el.textContent=note;
+  }
 }

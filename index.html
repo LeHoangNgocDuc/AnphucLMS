@@ -1736,7 +1736,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
     <section id="lms" class="panel" aria-label="Quản lý LMS">
       <div id="ap-lms-admin">
         <div class="lms-admin-header"><h2><i class="bi bi-journal-richtext"></i> LMS – Giao bài trực tuyến</h2><p>Nạp ngân hàng, rà soát câu trùng, chọn câu đúng QuestionUID, giao bài 3 cấp độ và theo dõi điểm. Không thay đổi các chức năng quản lý trước đây.</p></div>
-        <div class="lms-admin-section"><h3>1. Kết nối ngân hàng Google Sheets riêng</h3><p id="ap-lms-bank-summary" class="mini-note">Đang kiểm tra...</p>
+        <div class="lms-admin-section"><h3>1. Kết nối ngân hàng Google Sheets riêng</h3><p id="ap-lms-bank-summary" class="mini-note">Đang kiểm tra...</p><div class="lms-admin-toolbar"><button type="button" class="lms-admin-btn alt" onclick="apLmsRunDiagnostics()">Kiểm tra API và phiên bản LMS</button></div><p id="ap-lms-diagnostics-result" class="mini-note" aria-live="polite"></p>
           <div class="lms-admin-fields"><label>ID hoặc liên kết Google Sheets ngân hàng<input id="ap-lms-bank-id" placeholder="Dán ID bảng tính ngân hàng..."></label></div>
           <div class="lms-admin-toolbar"><button class="lms-admin-btn" onclick="apLmsNewBank()">Tạo ngân hàng mới</button><button class="lms-admin-btn alt" onclick="apLmsConnectBank()">Kết nối ngân hàng có sẵn</button><a id="ap-lms-bank-link" href="#" target="_blank" rel="noopener noreferrer">Mở Google Sheet</a></div>
         </div>
@@ -1746,17 +1746,35 @@ p,li,.chat-bubble { text-wrap:pretty; }
           <div class="lms-admin-progress"><i id="ap-lms-import-bar" style="width:0%"></i></div>
           <p class="mini-note">Câu trùng nội dung + đáp án được bỏ qua khi nạp; câu trùng nhưng mâu thuẫn đáp án được đánh dấu REVIEW, không dùng để chấm trước khi duyệt.</p>
         </div>
-        <div class="lms-admin-section"><h3>3. Tạo bài tập theo khối/lớp và đúng QuestionUID</h3><p class="mini-note" id="ap-lms-catalog-info">Chọn nguồn ngân hàng trước.</p>
-          <div class="lms-admin-fields"><label>Khối<select id="ap-lms-assignment-grade" onchange="apLmsSetChapter()"><option value="">Chọn khối</option></select></label><label>Chương<select id="ap-lms-assignment-chapter"><option value="">Chọn chương</option></select></label><label>Lớp (để trống: toàn khối)<input id="ap-lms-assignment-class" placeholder="Ví dụ A, B, C hoặc Chung"></label><label>Hạn nộp (không bắt buộc)<input id="ap-lms-assignment-due" type="datetime-local"></label><label>Tiêu đề bài tập<input id="ap-lms-assignment-title" placeholder="VD: Biểu thức đại số – tuần 10"></label></div>
+
+        <div class="lms-admin-section lms-ai-studio" id="ap-lms-ai-studio">
+          <div class="lms-ai-studio-title"><div><span class="lms-ai-eyebrow">AN PHÚC AI STUDIO</span><h3>3. Tạo câu hỏi thông minh bằng Gemini</h3><p>AI chỉ tạo bản nháp. Giáo viên kiểm tra, chỉnh sửa và duyệt từng câu trước khi dùng trong đề.</p></div><span class="lms-ai-stage">DRAFT → GV DUYỆT → READY</span></div>
+          <div id="ap-lms-ai-status" class="lms-ai-status">Đang chờ kết nối ngân hàng và kiểm tra cấu hình Gemini.</div>
+          <div class="lms-admin-fields lms-ai-fields">
+            <label>Khối<select id="ap-lms-ai-grade"><option value="6">Khối 6</option><option value="7" selected>Khối 7</option><option value="8">Khối 8</option><option value="9">Khối 9</option></select></label>
+            <label>Chương<input id="ap-lms-ai-chapter" placeholder="Ví dụ: Chương 2"></label>
+            <label>Bài / Chủ đề<input id="ap-lms-ai-topic" placeholder="Ví dụ: Số thực"></label>
+            <label>Bộ sách / nguồn tham khảo<input id="ap-lms-ai-book" placeholder="Ví dụ: Kết nối tri thức"></label>
+            <label>Cấp độ<select id="ap-lms-ai-level"><option value="1">Cấp 1 – Nhận biết</option><option value="2">Cấp 2 – Thông hiểu</option><option value="3">Cấp 3 – Vận dụng</option><option value="0">Phân bổ cả 3 cấp</option></select></label>
+            <label>Số câu/lượt<select id="ap-lms-ai-count"><option value="3">3 câu</option><option value="5" selected>5 câu</option><option value="8">8 câu</option><option value="10">10 câu</option></select></label>
+            <label class="lms-ai-wide">Mục tiêu kiến thức<textarea id="ap-lms-ai-objectives" placeholder="Mô tả kiến thức, dạng toán, mức khó, yêu cầu đáp án..." rows="2"></textarea></label>
+            <label class="lms-ai-wide">Nguồn văn bản do giáo viên cung cấp (nếu có)<textarea id="ap-lms-ai-source" placeholder="Đoạn nội dung để AI dựa vào; không nhập thông tin cá nhân của học sinh" rows="2"></textarea></label>
+          </div>
+          <div class="lms-admin-toolbar"><button type="button" class="lms-admin-btn green" id="ap-lms-ai-generate-btn" onclick="apLmsAIGenerate()"><i class="bi bi-stars"></i> Tạo câu hỏi nháp</button><button type="button" class="lms-admin-btn alt" onclick="apLmsAIListDrafts()">Tải danh sách bản nháp</button></div>
+          <div id="ap-lms-ai-notice" class="lms-ai-status" role="status" aria-live="polite">Chưa tạo câu AI trong phiên này.</div>
+          <div id="ap-lms-ai-drafts" class="lms-ai-drafts" aria-label="Danh sách câu hỏi AI chờ duyệt"></div>
+        </div>
+        <div class="lms-admin-section"><h3>4. Tạo bài tập theo khối/lớp và đúng QuestionUID</h3><p class="mini-note" id="ap-lms-catalog-info">Chọn nguồn ngân hàng trước.</p>
+          <div class="lms-admin-fields"><label>Khối<select id="ap-lms-assignment-grade" onchange="apLmsSetChapter()"><option value="">Chọn khối</option></select></label><label>Chương<select id="ap-lms-assignment-chapter"><option value="">Chọn chương</option></select></label><label>Lớp (để trống: toàn khối)<input id="ap-lms-assignment-class" placeholder="Ví dụ A, B, C hoặc Chung"></label><label>Hạn nộp (không bắt buộc)<input id="ap-lms-assignment-due" type="datetime-local"></label><label>Số chương (không bắt buộc)<input id="ap-lms-assignment-chapter-number" type="number" min="0" max="999" placeholder="VD: 2 – để mã đề C02"></label><label>Tiêu đề bài tập<input id="ap-lms-assignment-title" placeholder="VD: Biểu thức đại số – tuần 10"></label></div>
           <p class="lms-note" style="margin:10px 0">Mỗi bài 3 cấp · 10 câu/cấp · 10 điểm/cấp · từ 6 điểm mở cấp kế tiếp. Để trống ID: hệ thống chọn ngẫu nhiên đúng khối/chương/cấp. Hoặc nhập CHÍNH XÁC 10 QuestionUID cho từng cấp, không cần mã đề.</p>
           <div class="lms-admin-fields"> <label>Cấp 1 – Nhận biết (10 ID)<textarea id="ap-lms-ids-1" placeholder="APQ-... (mỗi dòng 1 ID)"></textarea></label><label>Cấp 2 – Thông hiểu (10 ID)<textarea id="ap-lms-ids-2" placeholder="APQ-... (mỗi dòng 1 ID)"></textarea></label><label>Cấp 3 – Vận dụng (10 ID)<textarea id="ap-lms-ids-3" placeholder="APQ-... (mỗi dòng 1 ID)"></textarea></label></div>
-          <div class="lms-admin-toolbar"><button class="lms-admin-btn green" onclick="apLmsCreateAssignment()"><i class="bi bi-send"></i> Tạo và giao bài</button></div>
+          <div class="lms-admin-toolbar"><button class="lms-admin-btn green" id="ap-lms-create-btn" onclick="apLmsCreateAssignment()"><i class="bi bi-send"></i> Tạo và giao bài</button></div>
         </div>
-        <div class="lms-admin-section"><h3>4. Tìm câu hỏi và lấy ID</h3>
+        <div class="lms-admin-section"><h3>5. Tìm câu hỏi và lấy ID</h3>
           <div class="lms-admin-fields"><label>Cấp độ<select id="ap-lms-question-level"><option value="">Mọi cấp</option><option value="1">Cấp 1</option><option value="2">Cấp 2</option><option value="3">Cấp 3</option></select></label><label>Từ khóa, ID hoặc chương<input id="ap-lms-question-term" placeholder="Tìm theo nội dung / QuestionUID / ID gốc"></label></div>
           <div class="lms-admin-toolbar"><button class="lms-admin-btn alt" onclick="apLmsFindQuestions()"><i class="bi bi-search"></i> Tìm QuestionUID</button></div><div id="ap-lms-lookup-result" class="lms-idlist"></div>
         </div>
-        <div class="lms-admin-section"><h3>5. Bài đã giao và báo cáo kết quả</h3><div id="ap-lms-admin-assignments"></div>
+        <div class="lms-admin-section"><h3>6. Bài đã giao và báo cáo kết quả</h3><div id="ap-lms-admin-assignments"></div>
           <div class="lms-admin-fields"><label>Chọn bài để xem điểm<select id="ap-lms-results-assignment" onchange="apLmsLoadResults()"><option value="">Chọn bài cần xem điểm</option></select></label></div><div id="ap-lms-admin-results"></div>
         </div>
         <div class="lms-admin-section"><h3>Trạng thái thao tác</h3><div class="lms-admin-status" id="ap-lms-admin-status" role="status" aria-live="polite">Sẵn sàng.</div></div>
@@ -2428,10 +2446,10 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
   // ============================================
   // CẤU HÌNH API - LIÊN KẾT VỚI GOOGLE SHEET
   // ============================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbwmbJdQVE8x1bByhKO-YZv_XxwglJ-J7EaOOYcHNHekHhNTcwE6udjY2Y8I5N2Q7giE/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyVS6wT3G9KONIk6Bdu99yVRnkxvaJyqt90-81EJoZC_RFeuUMjDvyeGlqC9ndJhm6trQ/exec";
   const FRONTEND_VERSION = 'V4.27';
   const CENTER_INFO = {
-    address: '30/11D Phước Tường, Phước Long, Nam Nha Trang',
+    address: '30/11A Phước Tường, Phước Long, Nam Nha Trang',
     phone: '0972466347',
     zalo: '0972466347',
     maps_url: 'https://www.google.com/maps/search/?api=1&query=30%2F11D%20Ph%C6%B0%E1%BB%9Bc%20T%C6%B0%E1%BB%9Dng%2C%20Ph%C6%B0%E1%BB%9Bc%20Long%2C%20Nam%20Nha%20Trang'
