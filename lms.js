@@ -32,8 +32,12 @@ async function apLmsApi(action,params={},method='GET',admin=false){
       const raw=String(result.message||'Yeu cau khong thanh cong.');
       let code=String(result.error_code||raw.split(':')[0]||'API_ERROR').slice(0,80);
       console.error('[AP LMS API]',{action,method,status:response.status,code,message:raw});
-      if(!admin && /UNAUTHORIZED:.*Gi[a-z\u00e1]o vi[e\u00ean]n/i.test(raw))
-        throw new Error('LMS_BACKEND_OUTDATED: API học sinh đang bị backend yêu cầu quyền giáo viên. Cần cập nhật Code.gs và triển khai New Version của Apps Script (giữ URL /exec).');
+      if(!admin && /UNAUTHORIZED:.*Gi[a-z\u00e1]o vi[e\u00ean]n/i.test(raw)){
+        if(action==='apLmsPublicDiagnostics')
+          throw new Error('LMS_DIAGNOSTICS_PROTECTED: /exec đang khóa nhầm endpoint chẩn đoán công khai. Kiểm tra API_URL và cập nhật Code.gs V1.5.3. (Phản hồi gốc: '+raw+')');
+        if(['apLmsPhoneLogin','apLmsLogin','apLmsDashboard','apLmsStart','apLmsSubmit','apLmsSaveDraft'].includes(action))
+          throw new Error('LMS_STUDENT_ROUTE_PROTECTED: API '+action+' đang bị yêu cầu quyền Giáo viên trên deployment /exec. Cập nhật Code.gs và Module_LMS.gs, rồi Deploy New Version.');
+      }
       throw new Error(raw);
     }
     return result.data;
@@ -76,7 +80,8 @@ async function apLmsLogin(event){
   if(!/^0\d{9}$/.test(phone)){apLmsError('Nhập đúng 10 chữ số điện thoại đã đăng ký với Trung tâm.');return;}
   apLmsBusy(true);apLmsClearError();
   try{
-    await apLmsCheckBackend();
+    // Authenticate directly; do not wait for a nonessential diagnostics GET.
+    // Student identity and phone are verified server-side by apLmsPhoneLogin.
     const result=await apLmsApi('apLmsPhoneLogin',{student_id:candidate.student_id,parent_phone:phone},'POST');
     AP_LMS_UI.session=result.session_token;AP_LMS_UI.student=result.student;sessionStorage.setItem('ap_lms_student_token',result.session_token);await apLmsLoadDashboard();
   }catch(e){apLmsError(e.message);}finally{apLmsBusy(false);}
@@ -235,14 +240,9 @@ async function apLmsConnectBank(){
   const originalLabel=button?button.textContent:'';
   if(button){button.disabled=true;button.textContent='Đang kết nối...';}
   try{
-    // A stale Code.gs can expose a valid V1.5 student diagnostic while still
-    // omitting the newer admin POST action. Check the exact capability first.
-    apLmsBankFeedback('Đang kiểm tra bộ định tuyến ngân hàng trên Apps Script...','working');
-    const diag=await apLmsApi('apLmsPublicDiagnostics',{},'GET',false);
-    if(!diag||!diag.capabilities||diag.capabilities.bank_connect!==true){
-      throw new Error('LMS_ROUTER_OUTDATED: Backend chưa xác nhận hỗ trợ apLmsConnectBank. Hãy cập nhật Code.gs trong đúng dự án Apps Script, rồi Deploy > Manage deployments > Edit > New version > Deploy.');
-    }
-    apLmsBankFeedback('Đã xác nhận endpoint kết nối. Đang gửi yêu cầu đến Apps Script...','working');
+    // Bank connection requires the teacher token. It does NOT depend on
+    // unrelated public/student diagnostics (which may be stale/blocked).
+    apLmsBankFeedback('Đang gửi yêu cầu kết nối ngân hàng bằng phiên Giáo viên...','working');
     const result=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id,confirm_switch:!!switching},'POST',true);
     apLmsBankFeedback('Backend đã nhận yêu cầu. Đang xác minh ID được lưu trên máy chủ...','working');
     const verified=await apLmsApi('apLmsBankStatus',{},'GET',true);
@@ -259,7 +259,7 @@ async function apLmsConnectBank(){
   }catch(error){
     let message=String(error.message||error);
     if(/ACTION_NOT_FOUND:\s*apLmsConnectBank|LMS_ENDPOINT_NOT_DEPLOYED.*apLmsConnectBank/.test(message))
-      message='LMS_ROUTER_OUTDATED: Code.gs trên Apps Script đang chạy chưa định tuyến apLmsConnectBank. Cập nhật Code.gs từ bản vá V1.5.2 và triển khai New version trên đúng URL /exec.';
+      message='LMS_ROUTER_OUTDATED: Deployment /exec chưa định tuyến apLmsConnectBank. Hãy cập nhật Code.gs V1.5.3 và triển khai New Version trên đúng Web App.';
     if(/BANK_ACCESS_DENIED/.test(message))message+=' Hãy mở bảng tính bằng tài khoản được dùng để triển khai Apps Script, bảo đảm tài khoản đó có quyền chỉnh sửa.';
     else if(/UNAUTHORIZED/.test(message))message+=' Phiên GV có thể hết hạn. Đăng nhập lại trước khi thử.';
     else if(/BANK_SAME_AS_CENTER/.test(message))message+=' Không dùng file quản lý học sinh làm ngân hàng.';
@@ -525,7 +525,7 @@ async function apLmsRunDiagnostics(){
     apLmsAdminMsg(note);
     const el=apLmsEl('ap-lms-diagnostics-result');if(el)el.textContent=note;
   }catch(e){
-    const note='LMS_BACKEND_MISMATCH: '+e.message+' · Kiểm tra API_URL trong index.html và Apps Script Manage deployments → Edit → New version.';
+    const note='LMS_PUBLIC_DIAGNOSTICS_ERROR: '+e.message+' · Đây là lỗi kiểm tra API công khai, KHÔNG phải xác nhận rằng ngân hàng bị hỏng. Hãy kiểm tra đúng /exec và Deploy New Version.';
     apLmsAdminMsg(note);const el=apLmsEl('ap-lms-diagnostics-result');if(el)el.textContent=note;
   }
 }
