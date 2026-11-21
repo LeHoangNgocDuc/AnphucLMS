@@ -1738,7 +1738,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
         <div class="lms-admin-header"><h2><i class="bi bi-journal-richtext"></i> LMS – Giao bài trực tuyến</h2><p>Nạp ngân hàng, rà soát câu trùng, chọn câu đúng QuestionUID, giao bài 3 cấp độ và theo dõi điểm. Không thay đổi các chức năng quản lý trước đây.</p></div>
         <div class="lms-admin-section"><h3>1. Kết nối ngân hàng Google Sheets riêng</h3><p id="ap-lms-bank-summary" class="mini-note">Đang kiểm tra...</p><div class="lms-admin-toolbar"><button type="button" class="lms-admin-btn alt" onclick="apLmsRunDiagnostics()">Kiểm tra API và phiên bản LMS</button></div><p id="ap-lms-diagnostics-result" class="mini-note" aria-live="polite"></p>
           <div class="lms-admin-fields"><label>ID hoặc liên kết Google Sheets ngân hàng<input id="ap-lms-bank-id" placeholder="Dán ID bảng tính ngân hàng..."></label></div>
-          <div class="lms-admin-toolbar"><button class="lms-admin-btn" onclick="apLmsNewBank()">Tạo ngân hàng mới</button><button class="lms-admin-btn alt" onclick="apLmsConnectBank()">Kết nối ngân hàng có sẵn</button><a id="ap-lms-bank-link" href="#" target="_blank" rel="noopener noreferrer">Mở Google Sheet</a></div>
+          <div class="lms-admin-toolbar"><button type="button" class="lms-admin-btn" onclick="apLmsNewBank()">Tạo ngân hàng mới</button><button type="button" id="ap-lms-bank-connect-btn" class="lms-admin-btn alt" onclick="apLmsConnectBank()">Kết nối ngân hàng có sẵn</button><a id="ap-lms-bank-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Mở Google Sheet</a></div><p id="ap-lms-bank-feedback" class="lms-bank-feedback" role="status" aria-live="polite" aria-atomic="true">Sau khi nhấn kết nối, trạng thái và mã lỗi sẽ xuất hiện ngay tại đây.</p>
         </div>
         <div class="lms-admin-section"><h3>2. Nạp ngân hàng câu hỏi trắc nghiệm từ Excel</h3>
           <div class="lms-note">Hỗ trợ tệp .xlsx với sheet LMS_Questions, ToanTHCS, ToanTHPT, QuestionBank. Tự quy về ID duy nhất, giữ câu cần rà soát, không xóa bản gốc. Với ngân hàng 4.000 câu ban đầu, nhanh hơn nếu tải tệp chuẩn hóa trực tiếp lên Google Drive rồi kết nối ở bước 1.</div>
@@ -2446,10 +2446,10 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
   // ============================================
   // CẤU HÌNH API - LIÊN KẾT VỚI GOOGLE SHEET
   // ============================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbyVS6wT3G9KONIk6Bdu99yVRnkxvaJyqt90-81EJoZC_RFeuUMjDvyeGlqC9ndJhm6trQ/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwmbJdQVE8x1bByhKO-YZv_XxwglJ-J7EaOOYcHNHekHhNTcwE6udjY2Y8I5N2Q7giE/exec";
   const FRONTEND_VERSION = 'V4.27';
   const CENTER_INFO = {
-    address: '30/11A Phước Tường, Phước Long, Nam Nha Trang',
+    address: '30/11D Phước Tường, Phước Long, Nam Nha Trang',
     phone: '0972466347',
     zalo: '0972466347',
     maps_url: 'https://www.google.com/maps/search/?api=1&query=30%2F11D%20Ph%C6%B0%E1%BB%9Bc%20T%C6%B0%E1%BB%9Dng%2C%20Ph%C6%B0%E1%BB%9Bc%20Long%2C%20Nam%20Nha%20Trang'

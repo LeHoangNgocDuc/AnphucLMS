@@ -154,3 +154,11 @@
 #ap-lms-admin .lms-ai-draft-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 #ap-lms-admin .lms-ai-help{font-size:11px;color:#60788d;line-height:1.7;margin-top:8px}
 @media(max-width:700px){#ap-lms-admin .lms-ai-wide{grid-column:1/-1}#ap-lms-admin .lms-ai-edit-grid{grid-template-columns:1fr}#ap-lms-admin .lms-ai-edit-grid .full{grid-column:1}#ap-lms-admin .lms-ai-draft{padding:11px}#ap-lms-admin .lms-ai-draft-actions button{flex:1 1 120px}}
+
+/* V1.5.1 Bank connector: immediate local status (does not affect legacy tabs). */
+.lms-bank-feedback{margin:12px 0 0;padding:11px 14px;border-radius:12px;border:1px solid #cbd5e1;background:#f5f8fc;color:#34465c;font-size:13px;line-height:1.55;overflow-wrap:anywhere;white-space:pre-wrap;}
+.lms-bank-feedback[data-kind="working"]{background:#eef6ff;color:#114b85;border-color:#8cc4f7;}
+.lms-bank-feedback[data-kind="success"]{background:#eafaf2;color:#11613b;border-color:#80cda5;}
+.lms-bank-feedback[data-kind="error"]{background:#fff1f1;color:#9a1c22;border-color:#f4a2a2;}
+.lms-bank-feedback[data-kind="warning"]{background:#fff8e8;color:#805205;border-color:#edd092;}
+#ap-lms-bank-connect-btn[disabled]{opacity:.6;cursor:progress;}

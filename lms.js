@@ -181,37 +181,85 @@ function apLmsParentSummaryHtml_(lms){
   return `<div class="student-report-section"><div class="student-section-title"><i class="bi bi-mortarboard-fill"></i> Kết quả học LMS (3 cấp độ)</div><div class="student-mini-stats" style="margin-bottom:11px"><div class="student-mini-stat blue"><span>Bài được giao</span><strong>${Number(lms.total||0)}</strong></div><div class="student-mini-stat purple"><span>Hoàn thành</span><strong>${Number(lms.completed||0)}</strong></div><div class="student-mini-stat warn"><span>Chưa hoàn thành</span><strong>${Math.max(0,Number(lms.total||0)-Number(lms.completed||0))}</strong></div></div>${list||'<div class="mini-note">Chưa được giao bài trực tuyến.</div>'}</div>`;
 }
 // Teacher: module manager, import and duplicates ------------------------------------
-const AP_LMS_ADMIN={catalog:[],importing:false};
+const AP_LMS_ADMIN={catalog:[],importing:false,connectionPending:false,statusLoadSeq:0};
 function apLmsAdminMsg(v){const el=apLmsEl('ap-lms-admin-status');if(el)el.textContent=String(v||'');}
+function apLmsBankFeedback(message,kind='working'){
+  const el=apLmsEl('ap-lms-bank-feedback');
+  if(el){el.textContent=String(message||'');el.dataset.kind=kind;}
+  apLmsAdminMsg(message);
+  if(kind==='error')console.error('[AnPhuc LMS / bank]',String(message));
+}
+
 async function apLmsLoadAdmin(){
-  apLmsAdminMsg('Đang kiểm tra kết nối ngân hàng...');
+  const request=++AP_LMS_ADMIN.statusLoadSeq;
+  if(!AP_LMS_ADMIN.connectionPending)apLmsAdminMsg('Đang kiểm tra kết nối ngân hàng...');
   try{
     const st=await apLmsApi('apLmsBankStatus',{},'GET',true);
+    if(request!==AP_LMS_ADMIN.statusLoadSeq)return;
     AP_LMS_ADMIN.bankId=st.bank_id||'';
-    AP_LMS_ADMIN.bankReady=st.configured;
+    AP_LMS_ADMIN.bankReady=!!st.configured;
     if(st.configured && st.bank_id){apLmsEl('ap-lms-bank-id').value=st.bank_id;}
-    apLmsEl('ap-lms-bank-summary').textContent=st.configured?`Đã kết nối · ${Number(st.count||0).toLocaleString('vi-VN')} câu · ${Number(st.ready||0).toLocaleString('vi-VN')} câu READY · Ngân hàng: ...${apLmsEsc(st.bank_id.slice(-6))}`:'Chưa kết nối ngân hàng. Hãy tạo ngân hàng mới hoặc nhập ID Google Sheets riêng.';
+    apLmsEl('ap-lms-bank-summary').textContent=st.configured?`Đã kết nối · ${Number(st.count||0).toLocaleString('vi-VN')} câu · ${Number(st.ready||0).toLocaleString('vi-VN')} câu READY · Ngân hàng: ...${apLmsEsc((st.bank_id||'').slice(-6))}`:'Chưa kết nối ngân hàng. Hãy tạo ngân hàng mới hoặc nhập ID Google Sheets riêng.';
     if(st.bank_url){apLmsEl('ap-lms-bank-link').href=st.bank_url;apLmsEl('ap-lms-bank-link').hidden=false;}else{apLmsEl('ap-lms-bank-link').hidden=true;}
-    if(st.configured){await apLmsLoadCatalog();await apLmsLoadAssignments();await apLmsAILoadStatus();}apLmsAdminMsg('Sẵn sàng.');
-  }catch(e){apLmsAdminMsg(e.message);}
+    if(st.configured){
+      // A working connection must remain visible even if the heavy catalog request fails.
+      const tasks=await Promise.allSettled([apLmsLoadCatalog(),apLmsLoadAssignments(),apLmsAILoadStatus()]);
+      if(request!==AP_LMS_ADMIN.statusLoadSeq)return;
+      const rejected=tasks.filter(x=>x.status==='rejected').map(x=>x.reason&&x.reason.message||'Không rõ lỗi');
+      if(rejected.length){apLmsBankFeedback('ĐÃ KẾT NỐI ngân hàng, nhưng có phần quản trị tải chưa xong: '+rejected.join('; '),'warning');return;}
+    }
+    if(!AP_LMS_ADMIN.connectionPending)apLmsAdminMsg('Sẵn sàng.');
+  }catch(e){
+    if(request!==AP_LMS_ADMIN.statusLoadSeq)return;
+    apLmsBankFeedback('BANK_STATUS_ERROR: '+e.message,'error');
+  }
 }
 async function apLmsNewBank(){if(!confirm('Tạo Google Spreadsheet ngân hàng riêng, không thay đổi bảng tính trung tâm?'))return;
   try{apLmsAdminMsg('Đang tạo ngân hàng...');const r=await apLmsApi('apLmsNewBank',{},'POST',true);apLmsAdminMsg('Đã tạo ngân hàng: '+r.url);await apLmsLoadAdmin();}
   catch(e){apLmsAdminMsg(e.message);}}
 async function apLmsConnectBank(){
+  if(AP_LMS_ADMIN.connectionPending)return;
   const raw=(apLmsEl('ap-lms-bank-id').value||'').trim();
   const match=raw.match(/^https:\/\/docs\.google\.com\/spreadsheets\/d\/([\w-]{20,})(?:[/?#]|$)/i);
   const id=match?match[1]:(/^[\w-]{20,}$/.test(raw)?raw:'');
-  if(!id){apLmsAdminMsg('BANK_ID_INVALID: Nhập đúng URL Google Sheets hoặc ID bảng tính.');return;}
+  if(!id){apLmsBankFeedback('BANK_ID_INVALID: Dán URL Google Sheets hoặc ID bảng tính hợp lệ.','error');return;}
+  if(typeof getAdminToken!=='function'||!getAdminToken()){
+    apLmsBankFeedback('UNAUTHORIZED: Phiên Giáo viên không còn hợp lệ. Hãy đăng xuất, đăng nhập lại rồi thử kết nối.','error');return;
+  }
   const switching=AP_LMS_ADMIN.bankId&&AP_LMS_ADMIN.bankId!==id;
-  if(switching&&!confirm('Đang chuyển sang ngân hàng khác. Bạn đã sao lưu và muốn đổi nguồn?'))return;
+  if(switching&&!confirm('Bạn đang chuyển sang ngân hàng khác. Hãy chắc chắn đã sao lưu dữ liệu. Tiếp tục?'))return;
+  // Stop an earlier status GET from replacing the currently typed bank ID.
+  AP_LMS_ADMIN.statusLoadSeq++;
+  AP_LMS_ADMIN.connectionPending=true;
+  const button=apLmsEl('ap-lms-bank-connect-btn');
+  const originalLabel=button?button.textContent:'';
+  if(button){button.disabled=true;button.textContent='Đang kết nối...';}
   try{
-    apLmsAdminMsg('Đang kiểm tra quyền truy cập và cấu trúc ngân hàng...');
-    const d=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id,confirm_switch:!!switching},'POST',true);
-    AP_LMS_ADMIN.bankId=id;
-    apLmsAdminMsg('Đã kết nối ngân hàng ...'+d.bank_id_tail);
-    await apLmsLoadAdmin();
-  }catch(e){apLmsAdminMsg(e.message);}
+    apLmsBankFeedback('Đang gửi yêu cầu kết nối đến Apps Script (tối đa khoảng 32 giây). Không cần tải lại trang.','working');
+    const result=await apLmsApi('apLmsConnectBank',{bank_spreadsheet_id:id,confirm_switch:!!switching},'POST',true);
+    apLmsBankFeedback('Backend đã nhận yêu cầu. Đang xác minh ID được lưu trên máy chủ...','working');
+    const verified=await apLmsApi('apLmsBankStatus',{},'GET',true);
+    if(!verified||!verified.configured||verified.bank_id!==id)throw new Error('BANK_VERIFY_FAILED: Máy chủ chưa xác nhận ID đã lưu. Không nhập lại dữ liệu trước khi kiểm tra trạng thái.');
+    AP_LMS_ADMIN.bankId=id;AP_LMS_ADMIN.bankReady=true;
+    apLmsEl('ap-lms-bank-summary').textContent=`Đã kết nối · ${Number(verified.count||0).toLocaleString('vi-VN')} câu · ${Number(verified.ready||0).toLocaleString('vi-VN')} câu READY · Ngân hàng: ...${id.slice(-6)}`;
+    const link=apLmsEl('ap-lms-bank-link');
+    if(link){link.href=verified.bank_url||result.bank_url||('https://docs.google.com/spreadsheets/d/'+id+'/edit');link.hidden=false;}
+    apLmsBankFeedback(`KẾT NỐI THÀNH CÔNG · ${Number(verified.count||0).toLocaleString('vi-VN')} câu hỏi · ${Number(verified.ready||0).toLocaleString('vi-VN')} câu READY. Đã lưu ID trên Apps Script.`, 'success');
+    // Load heavy catalog separately: failure must not turn a successful connect into failure.
+    const tasks=await Promise.allSettled([apLmsLoadCatalog(),apLmsLoadAssignments(),apLmsAILoadStatus()]);
+    const rejected=tasks.filter(t=>t.status==='rejected').map(t=>t.reason&&t.reason.message||'Không rõ lỗi');
+    if(rejected.length)apLmsBankFeedback('Đã kết nối thành công nhưng chưa tải đủ dữ liệu quản trị: '+rejected.join('; '),'warning');
+  }catch(error){
+    let message=String(error.message||error);
+    if(/BANK_ACCESS_DENIED/.test(message))message+=' Hãy mở bảng tính bằng tài khoản được dùng để triển khai Apps Script, bảo đảm tài khoản đó có quyền chỉnh sửa.';
+    else if(/UNAUTHORIZED/.test(message))message+=' Phiên GV có thể hết hạn. Đăng nhập lại trước khi thử.';
+    else if(/BANK_SAME_AS_CENTER/.test(message))message+=' Không dùng file quản lý học sinh làm ngân hàng.';
+    else if(/timeout|chậm|abort/i.test(message))message+=' Nếu Apps Script đã hoàn tất nhưng trình duyệt hết thời gian chờ, hãy mở lại mục LMS để kiểm tra trạng thái trước khi thử lại.';
+    apLmsBankFeedback('BANK_CONNECT_ERROR: '+message,'error');
+  }finally{
+    AP_LMS_ADMIN.connectionPending=false;
+    if(button){button.disabled=false;button.textContent=originalLabel;}
+  }
 }
 async function apLmsLoadCatalog(){
   const d=await apLmsApi('apLmsCatalog',{},'GET',true);AP_LMS_ADMIN.catalog=d.catalog||[];
