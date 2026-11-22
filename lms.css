@@ -11,7 +11,7 @@
 #role-landing .role-brand h1{letter-spacing:-.6px}
 @media(max-width:850px){#role-landing .role-card-grid{max-width:580px;grid-template-columns:1fr;gap:13px}#role-landing .role-card{min-height:0}}
 @media(max-width:768px){#role-landing .role-card.student .role-icon i{font-size:26px}#role-landing .role-card{min-height:0}}
-#ap-lms-app{--lms-ink:#153257;--lms-muted:#63778d;--lms-stroke:#dae5f1;--lms-teal:#087c79;--lms-blue:#165ca8;min-height:100dvh;background:radial-gradient(ellipse 60% 48% at 2% 0%,#e6f0ff,transparent 75%),linear-gradient(150deg,#f5f9ff,#f4f9f9)}
+#ap-lms-app{font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--lms-ink:#153257;--lms-muted:#63778d;--lms-stroke:#dae5f1;--lms-teal:#087c79;--lms-blue:#165ca8;min-height:100dvh;background:radial-gradient(ellipse 60% 48% at 2% 0%,#e6f0ff,transparent 75%),linear-gradient(150deg,#f5f9ff,#f4f9f9)}
 #ap-lms-app [hidden]{display:none!important}
 #ap-lms-app .lms-container{max-width:1130px;margin:auto;padding:23px 20px 54px}
 #ap-lms-app .lms-topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:80px;background:#fff;border:1px solid var(--lms-stroke);border-radius:21px;padding:12px 19px;box-shadow:0 10px 32px rgba(17,61,116,.055)}
@@ -230,3 +230,92 @@
 .lms-parent-top1 i{font-size:16px;flex:none}
 @media(max-width:680px){#ap-lms-app .lms-chapter-card{min-height:143px;padding:15px}#ap-lms-app .lms-dialog-actions>*{flex:1 1 120px}#ap-lms-app .lms-quiz-nav{gap:8px}#ap-lms-app .lms-quiz-nav button{width:44px;height:44px}}
 @media(prefers-reduced-motion:reduce){#ap-lms-app .lms-confetti i{animation:none;display:none}#ap-lms-app .lms-chapter-card{transition:none}#ap-lms-app .lms-chapter-card:hover{transform:none}}
+
+/* AN PHUC LMS V1.6.2 – SGK KNTT chapter → lesson accordion */
+#ap-lms-app .lms-sgk-accordion{display:flex;flex-direction:column;gap:12px;margin-top:16px}
+#ap-lms-app .lms-sgk-chapter{background:#fff;border:1px solid #dae5f1;border-radius:18px;overflow:hidden;box-shadow:0 5px 18px rgba(17,54,99,.035)}
+#ap-lms-app .lms-sgk-chapter>summary{display:flex;gap:13px;align-items:center;min-height:82px;padding:17px 19px;cursor:pointer;list-style:none;user-select:none}
+#ap-lms-app .lms-sgk-chapter>summary::-webkit-details-marker{display:none}
+#ap-lms-app .lms-sgk-chapter[open]>summary{border-bottom:1px solid #e7edf4;background:linear-gradient(90deg,#eef7fd,#fff)}
+#ap-lms-app .lms-sgk-chapter-icon{width:43px;height:43px;flex:0 0 43px;display:grid;place-items:center;border-radius:13px;color:#096caa;background:#eaf4ff;font-size:22px}
+#ap-lms-app .lms-sgk-chapter-text{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}
+#ap-lms-app .lms-sgk-chapter-text strong{font-size:16px;line-height:1.35;color:#143554;overflow-wrap:anywhere}
+#ap-lms-app .lms-sgk-chapter-text small{font-size:12px;color:#68829b}
+#ap-lms-app .lms-sgk-chevron{color:#6486a3;transition:transform .18s}
+#ap-lms-app .lms-sgk-chapter[open] .lms-sgk-chevron{transform:rotate(180deg)}
+#ap-lms-app .lms-sgk-lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px}
+#ap-lms-app .lms-sgk-lesson{min-width:0;margin:0;height:100%;display:flex;flex-direction:column}
+#ap-lms-app .lms-sgk-lesson h3{font-size:16px;line-height:1.45;overflow-wrap:anywhere}
+#ap-lms-app .lms-sgk-lesson .lms-submit-lock,#ap-lms-app .lms-sgk-lesson>button{margin-top:auto}
+#ap-lms-app .lms-sgk-lesson.is-unavailable{opacity:.66;background:#f5f8fc;border-color:#e1e8f1;box-shadow:none}
+#ap-lms-app .lms-sgk-lesson.is-unavailable button:disabled{cursor:not-allowed;filter:grayscale(1)}
+#ap-lms-app .lms-sgk-wait{color:#697d90;font-size:13px;line-height:1.5}
+#ap-lms-app .lms-sgk-source{font-size:12px;color:#677f98}
+#ap-lms-app .lms-sgk-toggle{display:flex;gap:9px;align-items:center;font-size:13px;color:#234a64;cursor:pointer;margin:12px 0}
+#ap-lms-app .lms-sgk-toggle input{width:17px;height:17px;accent-color:#0e7e83;flex:0 0 auto}
+@media(max-width:740px){#ap-lms-app .lms-sgk-lesson-grid{grid-template-columns:1fr;padding:11px}#ap-lms-app .lms-sgk-chapter>summary{padding:14px;min-height:68px;gap:10px}#ap-lms-app .lms-sgk-chapter-icon{width:36px;height:36px;flex-basis:36px;font-size:18px}#ap-lms-app .lms-sgk-chapter-text strong{font-size:14px}}
+@media(prefers-reduced-motion:reduce){#ap-lms-app .lms-sgk-chevron{transition:none}}
+/* prevent grid rows from colliding when cards have internal padding */
+#ap-lms-app .lms-sgk-lesson{height:auto;box-sizing:border-box;min-height:196px}
+#ap-lms-app .lms-topic-toolbar label.lms-sgk-toggle{display:flex;flex-direction:row;align-items:center;gap:9px;margin:12px 0}
+#ap-lms-app .lms-topic-toolbar .lms-sgk-toggle input{display:inline-block;width:17px;min-height:17px;height:17px;padding:0;margin:0;flex:none}
+
+/* V1.7.0 · Gamification: mobile-first, reduced-motion aware and independent of admin UI */
+#ap-lms-app .lms-game-hero{background:linear-gradient(115deg,#0d4270,#0d736e);color:#fff;border-radius:20px;padding:18px;margin:16px 0 12px;box-shadow:0 15px 32px rgba(10,74,103,.15)}
+#ap-lms-app .lms-game-hero-heading{display:flex;align-items:start;justify-content:space-between;gap:14px}
+#ap-lms-app .lms-game-eyebrow{font-size:10px;font-weight:850;letter-spacing:1.5px;color:#b7f7d5}
+#ap-lms-app .lms-game-hero h3{font-size:clamp(18px,3vw,23px);color:white;margin:7px 0 4px}
+#ap-lms-app .lms-game-hero h3 i{color:#ffda74;margin-right:5px}
+#ap-lms-app .lms-game-hero p{color:#d4eeec;font-size:13px;margin:5px 0}
+#ap-lms-app .lms-game-xp{flex:none;display:flex;align-items:center;flex-direction:column;justify-content:center;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.14)}
+#ap-lms-app .lms-game-xp strong{font-size:30px;line-height:1.15;color:#fff}
+#ap-lms-app .lms-game-xp span{font-size:11px;color:#d0f8f2}
+#ap-lms-app .lms-game-stats{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;font-size:12px;font-weight:650}
+#ap-lms-app .lms-game-stats span{background:rgba(255,255,255,.12);border-radius:9px;padding:7px 10px}
+#ap-lms-app .lms-game-stats .bi-fire{color:#ffbc79}
+#ap-lms-app .lms-game-progress-copy{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:7px}
+#ap-lms-app .lms-game-track,#ap-lms-app .lms-chapter-progress{display:block;width:100%;height:8px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden}
+#ap-lms-app .lms-game-track span{display:block;height:100%;background:#ffce6b;border-radius:inherit;transition:width .35s ease}
+#ap-lms-app .lms-game-mission{display:flex;align-items:center;justify-content:space-between;gap:14px;border-radius:18px;border:1px solid #b8e8dc;background:#eafaf6;padding:16px 18px;margin:12px 0 15px}
+#ap-lms-app .lms-game-mission small{color:#0b776d;font-size:11px;font-weight:850;letter-spacing:.5px}
+#ap-lms-app .lms-game-mission h3{font-size:17px;color:#184563;margin:5px 0}
+#ap-lms-app .lms-game-mission p{color:#567888;font-size:12px;margin:0}
+#ap-lms-app .lms-game-mission button{min-height:48px;flex:none}
+#ap-lms-app .lms-game-board{background:#fff;border:1px solid #dae6ef;border-radius:18px;padding:15px;margin:14px 0 18px}
+#ap-lms-app .lms-game-board-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:11px;margin-bottom:11px}
+#ap-lms-app .lms-game-board .lms-game-eyebrow{color:#0c8880}
+#ap-lms-app .lms-game-board h3{color:#173d61;font-size:18px;margin:5px 0}
+#ap-lms-app .lms-game-tabs{display:flex;gap:4px;padding:4px;background:#eaf2fa;border-radius:12px}
+#ap-lms-app .lms-game-tabs button{font:inherit;font-size:12px;font-weight:800;padding:9px 14px;min-height:40px;background:transparent;border:0;border-radius:9px;color:#486680;cursor:pointer}
+#ap-lms-app .lms-game-tabs button.active{background:#fff;color:#0b627d;box-shadow:0 2px 7px #bfd6e4}
+#ap-lms-app .lms-game-rank{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid #eaf1f6;font-size:13px;color:#304f69}
+#ap-lms-app .lms-game-rank:last-child{border-bottom:0}
+#ap-lms-app .lms-game-rank.is-me{background:#ecfaf4;border-radius:11px;padding:11px}
+#ap-lms-app .lms-game-rank-num{width:28px;height:28px;flex:none;display:grid;place-items:center;border-radius:9px;background:#eaf2fb;color:#0b5896}
+#ap-lms-app .lms-game-rank span{flex:1;min-width:0;overflow-wrap:anywhere}
+#ap-lms-app .lms-game-rank b{white-space:nowrap;color:#087c79}
+#ap-lms-app .lms-game-own{background:#f0f7fe;border:1px solid #d8e7f5;border-radius:12px;padding:11px;font-size:13px;color:#185780;margin-top:11px}
+#ap-lms-app .lms-game-privacy,#ap-lms-app .lms-game-muted{font-size:12px;line-height:1.5;color:#668096}
+#ap-lms-app .lms-game-privacy{margin:12px 0 0}
+#ap-lms-app .lms-stars{display:inline-flex;gap:3px;align-items:center;font-size:20px;line-height:1;letter-spacing:0}
+#ap-lms-app .lms-stars .earned{color:#e5a52f;text-shadow:0 1px 2px rgba(160,102,9,.18)}
+#ap-lms-app .lms-stars .empty{color:#cbd5df}
+#ap-lms-app .lms-stars-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#ap-lms-app .lms-perfect{border:2px solid #e6ba52;box-shadow:0 6px 16px rgba(171,116,8,.10)}
+#ap-lms-app .lms-perfect-badge{font-size:11px;font-weight:850;color:#8d5b02;background:#fff2bd;padding:5px 8px;border-radius:50px}
+#ap-lms-app .lms-chapter-progress{height:7px;margin-top:3px;background:#dbe8ef}
+#ap-lms-app .lms-chapter-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#1cae91,#f0bf53)}
+#ap-lms-app .lms-game-result-stars .lms-stars{font-size:34px;gap:9px}
+#ap-lms-app .lms-game-combo{display:inline-block;border-radius:20px;padding:8px 14px;background:#fff3d3;color:#87550d;font-weight:850}
+#ap-lms-app .lms-game-encourage{color:#275477;font-size:14px;font-weight:650}
+#ap-lms-app .lms-game-earned{background:#e4f7ed;border-radius:15px;padding:10px;font-size:15px;color:#087356;font-weight:850}
+#ap-lms-app .lms-sound-toggle{white-space:nowrap}
+#ap-lms-app [data-quick-topic]:focus-visible,#ap-lms-app [data-board-period]:focus-visible,#ap-lms-app .lms-sound-toggle:focus-visible{outline:3px solid #f2ad31;outline-offset:3px}
+@media(max-width:690px){#ap-lms-app .lms-game-hero{padding:15px}#ap-lms-app .lms-game-mission{flex-direction:column;align-items:stretch}#ap-lms-app .lms-game-mission button{width:100%}#ap-lms-app .lms-game-board{padding:12px}#ap-lms-app .lms-game-hero-heading{gap:9px}#ap-lms-app .lms-game-xp strong{font-size:24px}#ap-lms-app .lms-game-xp{padding:9px}#ap-lms-app .lms-bar-actions{justify-content:flex-end}}
+@media(prefers-reduced-motion:reduce){#ap-lms-app .lms-game-track span{transition:none}}
+
+#ap-lms-app .lms-game-board-opener{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;font-weight:850;color:#125879;min-height:43px;padding:5px 2px}
+#ap-lms-app .lms-game-board-opener::-webkit-details-marker{display:none}
+#ap-lms-app .lms-game-board-opener>span{margin-left:auto;font-size:12px;color:#607a91;font-weight:600}
+#ap-lms-app .lms-game-board details[open]>.lms-game-board-opener{border-bottom:1px solid #e0eaf1;margin-bottom:13px;padding-bottom:12px}
+@media(max-width:550px){#ap-lms-app .lms-game-board-opener{flex-wrap:wrap}#ap-lms-app .lms-game-board-opener>span{margin-left:0;width:100%}}

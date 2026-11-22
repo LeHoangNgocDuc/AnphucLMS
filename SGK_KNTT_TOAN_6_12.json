@@ -1,0 +1,2993 @@
+{
+  "metadata": {
+    "mon": "Toán",
+    "boSach": "Kết nối tri thức với cuộc sống",
+    "version": "2026-11-22",
+    "sourceUrls": {
+      "6": [
+        "https://thcs.toanmath.com/2022/01/sach-giao-khoa-toan-6-tap-1-ket-noi-tri-thuc-voi-cuoc-song.html",
+        "https://thcs.toanmath.com/2022/01/sach-giao-khoa-toan-6-tap-2-ket-noi-tri-thuc-voi-cuoc-song.html"
+      ],
+      "7": [
+        "https://thcs.toanmath.com/2022/01/sach-giao-khoa-toan-7-tap-1-ket-noi-tri-thuc-voi-cuoc-song.html",
+        "https://sgkvn.com/lop-7-10/ket-noi-tri-thuc-voi-cuoc-song-3/toan-7-tap-2-892.html"
+      ],
+      "8": [
+        "https://thcs.toanmath.com/2022/11/sach-giao-khoa-toan-8-tap-1-ket-noi-tri-thuc-voi-cuoc-song.html",
+        "https://thcs.toanmath.com/2022/11/sach-giao-khoa-toan-8-tap-2-ket-noi-tri-thuc-voi-cuoc-song.html"
+      ],
+      "9": [
+        "https://thcs.toanmath.com/2023/12/sach-giao-khoa-toan-9-tap-1-ket-noi-tri-thuc-voi-cuoc-song.html",
+        "https://thcs.toanmath.com/2023/12/sach-giao-khoa-toan-9-tap-2-ket-noi-tri-thuc-voi-cuoc-song.html"
+      ],
+      "10": [
+        "https://tailieumoi.vn/bai-viet/13544/giai-sgk-toan-10-ket-noi-tri-thuc-giai-toan-10-giai-toan-lop-10-giai-bai-tap-toan-10-hay-nhat-giai-toan-10-tap-1-tap-2-ket-noi-tri-thuc"
+      ],
+      "11": [
+        "https://tailieumoi.vn/bai-viet/72643/giai-sgk-toan-11-ket-noi-tri-thuc-giai-bai-tap-toan-11-ket-noi-tri-thuc-tap-1-tap-2-hay-chi-tiet",
+        "https://gioitoan.org/toan-11/kntt"
+      ],
+      "12": [
+        "https://sgkvn.com/lop-12-15/ket-noi-tri-thuc-voi-cuoc-song-3/toan-12-tap-mot-3500.html",
+        "https://www.sgkvn.com/lop-12-15/ket-noi-tri-thuc-voi-cuoc-song-3/toan-12-tap-hai-3520.html"
+      ]
+    },
+    "note": "Chương 6-12 theo mục lục tham khảo, cần đối chiếu SGK tái bản thực tế nếu sách có thay đổi."
+  },
+  "grades": {
+    "6": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Tập hợp các số tự nhiên",
+        "chapTitle": "Tập hợp các số tự nhiên",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Tập hợp",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Cách ghi số tự nhiên",
+            "order": 2
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Thứ tự trong tập hợp các số tự nhiên",
+            "order": 3
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Phép cộng và phép trừ số tự nhiên",
+            "order": 4
+          },
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Phép nhân và phép chia số tự nhiên",
+            "order": 5
+          },
+          {
+            "key": "L01-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Lũy thừa với số mũ tự nhiên",
+            "order": 7
+          },
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Thứ tự thực hiện các phép tính",
+            "order": 8
+          },
+          {
+            "key": "L01-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 9
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 10
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Tính chia hết trong tập hợp các số tự nhiên",
+        "chapTitle": "Tính chia hết trong tập hợp các số tự nhiên",
+        "lessons": [
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Quan hệ chia hết và tính chất",
+            "order": 1
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Dấu hiệu chia hết",
+            "order": 2
+          },
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Số nguyên tố",
+            "order": 3
+          },
+          {
+            "key": "L02-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Ước chung. Ước chung lớn nhất",
+            "order": 5
+          },
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Bội chung. Bội chung nhỏ nhất",
+            "order": 6
+          },
+          {
+            "key": "L02-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Số nguyên",
+        "chapTitle": "Số nguyên",
+        "lessons": [
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Tập hợp các số nguyên",
+            "order": 1
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Phép cộng và phép trừ số nguyên",
+            "order": 2
+          },
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Quy tắc dấu ngoặc",
+            "order": 3
+          },
+          {
+            "key": "L03-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Phép nhân số nguyên",
+            "order": 5
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Phép chia hết. Ước và bội của một số nguyên",
+            "order": 6
+          },
+          {
+            "key": "L03-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Một số hình phẳng trong thực tiễn",
+        "chapTitle": "Một số hình phẳng trong thực tiễn",
+        "lessons": [
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Hình tam giác đều. Hình vuông. Hình lục giác đều",
+            "order": 1
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Hình chữ nhật. Hình thoi. Hình bình hành. Hình thang cân",
+            "order": 2
+          },
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Chu vi và diện tích của một số tứ giác đã học",
+            "order": 3
+          },
+          {
+            "key": "L04-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Tính đối xứng của hình phẳng trong tự nhiên",
+        "chapTitle": "Tính đối xứng của hình phẳng trong tự nhiên",
+        "lessons": [
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Hình có trục đối xứng",
+            "order": 1
+          },
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Hình có tâm đối xứng",
+            "order": 2
+          },
+          {
+            "key": "L05-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Phân số",
+        "chapTitle": "Phân số",
+        "lessons": [
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Mở rộng phân số. Phân số bằng nhau",
+            "order": 1
+          },
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. So sánh phân số. Hỗn số dương",
+            "order": 2
+          },
+          {
+            "key": "L06-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Phép cộng và phép trừ phân số",
+            "order": 4
+          },
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Phép nhân và phép chia phân số",
+            "order": 5
+          },
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Hai bài toán về phân số",
+            "order": 6
+          },
+          {
+            "key": "L06-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Số thập phân",
+        "chapTitle": "Số thập phân",
+        "lessons": [
+          {
+            "key": "B28",
+            "type": "lesson",
+            "baiIndex": 28,
+            "tenBai": "Bài 28. Số thập phân",
+            "order": 1
+          },
+          {
+            "key": "B29",
+            "type": "lesson",
+            "baiIndex": 29,
+            "tenBai": "Bài 29. Tính toán với số thập phân",
+            "order": 2
+          },
+          {
+            "key": "B30",
+            "type": "lesson",
+            "baiIndex": 30,
+            "tenBai": "Bài 30. Làm tròn và ước lượng",
+            "order": 3
+          },
+          {
+            "key": "B31",
+            "type": "lesson",
+            "baiIndex": 31,
+            "tenBai": "Bài 31. Một số bài toán về tỉ số và tỉ số phần trăm",
+            "order": 4
+          },
+          {
+            "key": "L07-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 5
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 6
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Những hình hình học cơ bản",
+        "chapTitle": "Những hình hình học cơ bản",
+        "lessons": [
+          {
+            "key": "B32",
+            "type": "lesson",
+            "baiIndex": 32,
+            "tenBai": "Bài 32. Điểm và đường thẳng",
+            "order": 1
+          },
+          {
+            "key": "B33",
+            "type": "lesson",
+            "baiIndex": 33,
+            "tenBai": "Bài 33. Điểm nằm giữa hai điểm. Tia",
+            "order": 2
+          },
+          {
+            "key": "B34",
+            "type": "lesson",
+            "baiIndex": 34,
+            "tenBai": "Bài 34. Đoạn thẳng. Độ dài đoạn thẳng",
+            "order": 3
+          },
+          {
+            "key": "B35",
+            "type": "lesson",
+            "baiIndex": 35,
+            "tenBai": "Bài 35. Trung điểm của đoạn thẳng",
+            "order": 4
+          },
+          {
+            "key": "L08-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 5
+          },
+          {
+            "key": "B36",
+            "type": "lesson",
+            "baiIndex": 36,
+            "tenBai": "Bài 36. Góc",
+            "order": 6
+          },
+          {
+            "key": "B37",
+            "type": "lesson",
+            "baiIndex": 37,
+            "tenBai": "Bài 37. Số đo góc",
+            "order": 7
+          },
+          {
+            "key": "L08-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 8
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 9
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Dữ liệu và xác suất thực nghiệm",
+        "chapTitle": "Dữ liệu và xác suất thực nghiệm",
+        "lessons": [
+          {
+            "key": "B38",
+            "type": "lesson",
+            "baiIndex": 38,
+            "tenBai": "Bài 38. Dữ liệu và thu thập dữ liệu",
+            "order": 1
+          },
+          {
+            "key": "B39",
+            "type": "lesson",
+            "baiIndex": 39,
+            "tenBai": "Bài 39. Bảng thống kê và biểu đồ tranh",
+            "order": 2
+          },
+          {
+            "key": "B40",
+            "type": "lesson",
+            "baiIndex": 40,
+            "tenBai": "Bài 40. Biểu đồ cột",
+            "order": 3
+          },
+          {
+            "key": "B41",
+            "type": "lesson",
+            "baiIndex": 41,
+            "tenBai": "Bài 41. Biểu đồ cột kép",
+            "order": 4
+          },
+          {
+            "key": "L09-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 5
+          },
+          {
+            "key": "B42",
+            "type": "lesson",
+            "baiIndex": 42,
+            "tenBai": "Bài 42. Kết quả có thể và sự kiện trong trò chơi, thí nghiệm",
+            "order": 6
+          },
+          {
+            "key": "B43",
+            "type": "lesson",
+            "baiIndex": 43,
+            "tenBai": "Bài 43. Xác suất thực nghiệm",
+            "order": 7
+          },
+          {
+            "key": "L09-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 8
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 9
+          }
+        ]
+      }
+    ],
+    "7": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Số hữu tỉ",
+        "chapTitle": "Số hữu tỉ",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Tập hợp các số hữu tỉ",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Cộng, trừ, nhân, chia số hữu tỉ",
+            "order": 2
+          },
+          {
+            "key": "L01-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Lũy thừa với số mũ tự nhiên của một số hữu tỉ",
+            "order": 4
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Thứ tự thực hiện các phép tính. Quy tắc chuyển vế",
+            "order": 5
+          },
+          {
+            "key": "L01-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Số thực",
+        "chapTitle": "Số thực",
+        "lessons": [
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Làm quen với số thập phân vô hạn tuần hoàn",
+            "order": 1
+          },
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Số vô tỉ. Căn bậc hai số học",
+            "order": 2
+          },
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Tập hợp các số thực",
+            "order": 3
+          },
+          {
+            "key": "L02-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Góc và đường thẳng song song",
+        "chapTitle": "Góc và đường thẳng song song",
+        "lessons": [
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Góc ở vị trí đặc biệt. Tia phân giác của một góc",
+            "order": 1
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Hai đường thẳng song song và dấu hiệu nhận biết",
+            "order": 2
+          },
+          {
+            "key": "L03-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Tiên đề Euclid. Tính chất của hai đường thẳng song song",
+            "order": 4
+          },
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Định lí và chứng minh định lí",
+            "order": 5
+          },
+          {
+            "key": "L03-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Tam giác bằng nhau",
+        "chapTitle": "Tam giác bằng nhau",
+        "lessons": [
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Tổng các góc trong một tam giác",
+            "order": 1
+          },
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Hai tam giác bằng nhau. Trường hợp bằng nhau thứ nhất của tam giác",
+            "order": 2
+          },
+          {
+            "key": "L04-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Trường hợp bằng nhau thứ hai và thứ ba của tam giác",
+            "order": 4
+          },
+          {
+            "key": "L04-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 5
+          },
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Các trường hợp bằng nhau của tam giác vuông",
+            "order": 6
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Tam giác cân. Đường trung trực của đoạn thẳng",
+            "order": 7
+          },
+          {
+            "key": "L04-03",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 8
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 9
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Thu thập và biểu diễn dữ liệu",
+        "chapTitle": "Thu thập và biểu diễn dữ liệu",
+        "lessons": [
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Thu thập và phân loại dữ liệu",
+            "order": 1
+          },
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Biểu đồ hình quạt tròn",
+            "order": 2
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Biểu đồ đoạn thẳng",
+            "order": 3
+          },
+          {
+            "key": "L05-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Tỉ lệ thức và đại lượng tỉ lệ",
+        "chapTitle": "Tỉ lệ thức và đại lượng tỉ lệ",
+        "lessons": [
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Tỉ lệ thức",
+            "order": 1
+          },
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Tính chất của dãy tỉ số bằng nhau",
+            "order": 2
+          },
+          {
+            "key": "L06-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Đại lượng tỉ lệ thuận",
+            "order": 4
+          },
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Đại lượng tỉ lệ nghịch",
+            "order": 5
+          },
+          {
+            "key": "L06-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Biểu thức đại số và đa thức một biến",
+        "chapTitle": "Biểu thức đại số và đa thức một biến",
+        "lessons": [
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. Biểu thức đại số",
+            "order": 1
+          },
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Đa thức một biến",
+            "order": 2
+          },
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Phép cộng và phép trừ đa thức một biến",
+            "order": 3
+          },
+          {
+            "key": "L07-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Phép nhân đa thức một biến",
+            "order": 5
+          },
+          {
+            "key": "B28",
+            "type": "lesson",
+            "baiIndex": 28,
+            "tenBai": "Bài 28. Phép chia đa thức một biến",
+            "order": 6
+          },
+          {
+            "key": "L07-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Làm quen với biến cố và xác suất của biến cố",
+        "chapTitle": "Làm quen với biến cố và xác suất của biến cố",
+        "lessons": [
+          {
+            "key": "B29",
+            "type": "lesson",
+            "baiIndex": 29,
+            "tenBai": "Bài 29. Làm quen với biến cố",
+            "order": 1
+          },
+          {
+            "key": "B30",
+            "type": "lesson",
+            "baiIndex": 30,
+            "tenBai": "Bài 30. Làm quen với xác suất của biến cố",
+            "order": 2
+          },
+          {
+            "key": "L08-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Quan hệ giữa các yếu tố trong một tam giác",
+        "chapTitle": "Quan hệ giữa các yếu tố trong một tam giác",
+        "lessons": [
+          {
+            "key": "B31",
+            "type": "lesson",
+            "baiIndex": 31,
+            "tenBai": "Bài 31. Quan hệ giữa góc và cạnh đối diện trong một tam giác",
+            "order": 1
+          },
+          {
+            "key": "B32",
+            "type": "lesson",
+            "baiIndex": 32,
+            "tenBai": "Bài 32. Quan hệ giữa đường vuông góc và đường xiên",
+            "order": 2
+          },
+          {
+            "key": "B33",
+            "type": "lesson",
+            "baiIndex": 33,
+            "tenBai": "Bài 33. Quan hệ giữa ba cạnh của một tam giác",
+            "order": 3
+          },
+          {
+            "key": "L09-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B34",
+            "type": "lesson",
+            "baiIndex": 34,
+            "tenBai": "Bài 34. Sự đồng quy của ba đường trung tuyến, ba đường phân giác trong một tam giác",
+            "order": 5
+          },
+          {
+            "key": "B35",
+            "type": "lesson",
+            "baiIndex": 35,
+            "tenBai": "Bài 35. Sự đồng quy của ba đường trung trực, ba đường cao trong một tam giác",
+            "order": 6
+          },
+          {
+            "key": "L09-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 10,
+        "tenChuong": "Chương 10. Một số hình khối trong thực tiễn",
+        "chapTitle": "Một số hình khối trong thực tiễn",
+        "lessons": [
+          {
+            "key": "B36",
+            "type": "lesson",
+            "baiIndex": 36,
+            "tenBai": "Bài 36. Hình hộp chữ nhật và hình lập phương",
+            "order": 1
+          },
+          {
+            "key": "L10-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 2
+          },
+          {
+            "key": "B37",
+            "type": "lesson",
+            "baiIndex": 37,
+            "tenBai": "Bài 37. Hình lăng trụ đứng tam giác và hình lăng trụ đứng tứ giác",
+            "order": 3
+          },
+          {
+            "key": "L10-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END10",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 10",
+            "order": 5
+          }
+        ]
+      }
+    ],
+    "8": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Đa thức",
+        "chapTitle": "Đa thức",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Đơn thức",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Đa thức",
+            "order": 2
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Phép cộng và phép trừ đa thức",
+            "order": 3
+          },
+          {
+            "key": "L01-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Phép nhân đa thức",
+            "order": 5
+          },
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Phép chia đa thức cho đơn thức",
+            "order": 6
+          },
+          {
+            "key": "L01-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Hằng đẳng thức đáng nhớ và ứng dụng",
+        "chapTitle": "Hằng đẳng thức đáng nhớ và ứng dụng",
+        "lessons": [
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Hiệu hai bình phương. Bình phương của một tổng hay một hiệu",
+            "order": 1
+          },
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Lập phương của một tổng hay một hiệu",
+            "order": 2
+          },
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Tổng và hiệu hai lập phương",
+            "order": 3
+          },
+          {
+            "key": "L02-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Phân tích đa thức thành nhân tử",
+            "order": 5
+          },
+          {
+            "key": "L02-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Tứ giác",
+        "chapTitle": "Tứ giác",
+        "lessons": [
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Tứ giác",
+            "order": 1
+          },
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Hình thang cân",
+            "order": 2
+          },
+          {
+            "key": "L03-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Hình bình hành",
+            "order": 4
+          },
+          {
+            "key": "L03-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 5
+          },
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Hình chữ nhật",
+            "order": 6
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Hình thoi và hình vuông",
+            "order": 7
+          },
+          {
+            "key": "L03-03",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 8
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 9
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Định lí Thalès",
+        "chapTitle": "Định lí Thalès",
+        "lessons": [
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Định lí Thalès trong tam giác",
+            "order": 1
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Đường trung bình của tam giác",
+            "order": 2
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Tính chất đường phân giác của tam giác",
+            "order": 3
+          },
+          {
+            "key": "L04-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Dữ liệu và biểu đồ",
+        "chapTitle": "Dữ liệu và biểu đồ",
+        "lessons": [
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Thu thập và phân loại dữ liệu",
+            "order": 1
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Biểu diễn dữ liệu bằng bảng, biểu đồ",
+            "order": 2
+          },
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Phân tích số liệu thống kê dựa vào biểu đồ",
+            "order": 3
+          },
+          {
+            "key": "L05-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Phân thức đại số",
+        "chapTitle": "Phân thức đại số",
+        "lessons": [
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Phân thức đại số",
+            "order": 1
+          },
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Tính chất cơ bản của phân thức đại số",
+            "order": 2
+          },
+          {
+            "key": "L06-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Phép cộng và phép trừ phân thức đại số",
+            "order": 4
+          },
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. Phép nhân và phép chia phân thức đại số",
+            "order": 5
+          },
+          {
+            "key": "L06-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Phương trình bậc nhất và hàm số bậc nhất",
+        "chapTitle": "Phương trình bậc nhất và hàm số bậc nhất",
+        "lessons": [
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Phương trình bậc nhất một ẩn",
+            "order": 1
+          },
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Giải bài toán bằng cách lập phương trình",
+            "order": 2
+          },
+          {
+            "key": "L07-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Khái niệm hàm số và đồ thị của hàm số",
+            "order": 4
+          },
+          {
+            "key": "B28",
+            "type": "lesson",
+            "baiIndex": 28,
+            "tenBai": "Bài 28. Hàm số bậc nhất và đồ thị của hàm số bậc nhất",
+            "order": 5
+          },
+          {
+            "key": "B29",
+            "type": "lesson",
+            "baiIndex": 29,
+            "tenBai": "Bài 29. Hệ số góc của đường thẳng",
+            "order": 6
+          },
+          {
+            "key": "L07-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Mở đầu về tính xác suất của biến cố",
+        "chapTitle": "Mở đầu về tính xác suất của biến cố",
+        "lessons": [
+          {
+            "key": "B30",
+            "type": "lesson",
+            "baiIndex": 30,
+            "tenBai": "Bài 30. Kết quả có thể và kết quả thuận lợi",
+            "order": 1
+          },
+          {
+            "key": "B31",
+            "type": "lesson",
+            "baiIndex": 31,
+            "tenBai": "Bài 31. Cách tính xác suất của biến cố bằng tỉ số",
+            "order": 2
+          },
+          {
+            "key": "B32",
+            "type": "lesson",
+            "baiIndex": 32,
+            "tenBai": "Bài 32. Mối liên hệ giữa xác suất thực nghiệm với xác suất và ứng dụng",
+            "order": 3
+          },
+          {
+            "key": "L08-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Tam giác đồng dạng",
+        "chapTitle": "Tam giác đồng dạng",
+        "lessons": [
+          {
+            "key": "B33",
+            "type": "lesson",
+            "baiIndex": 33,
+            "tenBai": "Bài 33. Hai tam giác đồng dạng",
+            "order": 1
+          },
+          {
+            "key": "B34",
+            "type": "lesson",
+            "baiIndex": 34,
+            "tenBai": "Bài 34. Ba trường hợp đồng dạng của hai tam giác",
+            "order": 2
+          },
+          {
+            "key": "L09-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B35",
+            "type": "lesson",
+            "baiIndex": 35,
+            "tenBai": "Bài 35. Định lí Pythagore và ứng dụng",
+            "order": 4
+          },
+          {
+            "key": "B36",
+            "type": "lesson",
+            "baiIndex": 36,
+            "tenBai": "Bài 36. Các trường hợp đồng dạng của hai tam giác vuông",
+            "order": 5
+          },
+          {
+            "key": "B37",
+            "type": "lesson",
+            "baiIndex": 37,
+            "tenBai": "Bài 37. Hình đồng dạng",
+            "order": 6
+          },
+          {
+            "key": "L09-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 10,
+        "tenChuong": "Chương 10. Một số hình khối trong thực tiễn",
+        "chapTitle": "Một số hình khối trong thực tiễn",
+        "lessons": [
+          {
+            "key": "B38",
+            "type": "lesson",
+            "baiIndex": 38,
+            "tenBai": "Bài 38. Hình chóp tam giác đều",
+            "order": 1
+          },
+          {
+            "key": "B39",
+            "type": "lesson",
+            "baiIndex": 39,
+            "tenBai": "Bài 39. Hình chóp tứ giác đều",
+            "order": 2
+          },
+          {
+            "key": "L10-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END10",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 10",
+            "order": 4
+          }
+        ]
+      }
+    ],
+    "9": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Phương trình và hệ hai phương trình bậc nhất hai ẩn",
+        "chapTitle": "Phương trình và hệ hai phương trình bậc nhất hai ẩn",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Khái niệm phương trình và hệ hai phương trình bậc nhất hai ẩn",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Giải hệ hai phương trình bậc nhất hai ẩn",
+            "order": 2
+          },
+          {
+            "key": "L01-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Giải bài toán bằng cách lập hệ phương trình",
+            "order": 4
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Phương trình và bất phương trình bậc nhất một ẩn",
+        "chapTitle": "Phương trình và bất phương trình bậc nhất một ẩn",
+        "lessons": [
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Phương trình quy về phương trình bậc nhất một ẩn",
+            "order": 1
+          },
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Bất đẳng thức và tính chất",
+            "order": 2
+          },
+          {
+            "key": "L02-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Bất phương trình bậc nhất một ẩn",
+            "order": 4
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Căn bậc hai và căn bậc ba",
+        "chapTitle": "Căn bậc hai và căn bậc ba",
+        "lessons": [
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Căn bậc hai và căn thức bậc hai",
+            "order": 1
+          },
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Khai căn bậc hai với phép nhân và phép chia",
+            "order": 2
+          },
+          {
+            "key": "L03-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Biến đổi đơn giản và rút gọn biểu thức chứa căn thức bậc hai",
+            "order": 4
+          },
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Căn bậc ba và căn thức bậc ba",
+            "order": 5
+          },
+          {
+            "key": "L03-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Hệ thức lượng trong tam giác vuông",
+        "chapTitle": "Hệ thức lượng trong tam giác vuông",
+        "lessons": [
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Tỉ số lượng giác của góc nhọn",
+            "order": 1
+          },
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Một số hệ thức giữa cạnh, góc trong tam giác vuông và ứng dụng",
+            "order": 2
+          },
+          {
+            "key": "L04-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Đường tròn",
+        "chapTitle": "Đường tròn",
+        "lessons": [
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Mở đầu về đường tròn",
+            "order": 1
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Cung và dây của một đường tròn",
+            "order": 2
+          },
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Độ dài của cung tròn. Diện tích hình quạt tròn và hình vành khuyên",
+            "order": 3
+          },
+          {
+            "key": "L05-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 4
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Vị trí tương đối của đường thẳng và đường tròn",
+            "order": 5
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Vị trí tương đối của hai đường tròn",
+            "order": 6
+          },
+          {
+            "key": "L05-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 7
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 8
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Hàm số y = ax² (a ≠ 0). Phương trình bậc hai một ẩn",
+        "chapTitle": "Hàm số y = ax² (a ≠ 0). Phương trình bậc hai một ẩn",
+        "lessons": [
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Hàm số y = ax² (a ≠ 0)",
+            "order": 1
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Phương trình bậc hai một ẩn",
+            "order": 2
+          },
+          {
+            "key": "L06-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Định lí Viète và ứng dụng",
+            "order": 4
+          },
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Giải bài toán bằng cách lập phương trình",
+            "order": 5
+          },
+          {
+            "key": "L06-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Tần số và tần số tương đối",
+        "chapTitle": "Tần số và tần số tương đối",
+        "lessons": [
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Bảng tần số và biểu đồ tần số",
+            "order": 1
+          },
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Bảng tần số tương đối và biểu đồ tần số tương đối",
+            "order": 2
+          },
+          {
+            "key": "L07-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. Bảng tần số, tần số tương đối ghép nhóm và biểu đồ",
+            "order": 4
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Xác suất của biến cố trong một số mô hình xác suất đơn giản",
+        "chapTitle": "Xác suất của biến cố trong một số mô hình xác suất đơn giản",
+        "lessons": [
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Phép thử ngẫu nhiên và không gian mẫu",
+            "order": 1
+          },
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Xác suất của biến cố liên quan tới phép thử",
+            "order": 2
+          },
+          {
+            "key": "L08-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Đường tròn ngoại tiếp và đường tròn nội tiếp",
+        "chapTitle": "Đường tròn ngoại tiếp và đường tròn nội tiếp",
+        "lessons": [
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Góc nội tiếp",
+            "order": 1
+          },
+          {
+            "key": "B28",
+            "type": "lesson",
+            "baiIndex": 28,
+            "tenBai": "Bài 28. Đường tròn ngoại tiếp và đường tròn nội tiếp của một tam giác",
+            "order": 2
+          },
+          {
+            "key": "L09-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "B29",
+            "type": "lesson",
+            "baiIndex": 29,
+            "tenBai": "Bài 29. Tứ giác nội tiếp",
+            "order": 4
+          },
+          {
+            "key": "B30",
+            "type": "lesson",
+            "baiIndex": 30,
+            "tenBai": "Bài 30. Đa giác đều",
+            "order": 5
+          },
+          {
+            "key": "L09-02",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 6
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 10,
+        "tenChuong": "Chương 10. Một số hình khối trong thực tiễn",
+        "chapTitle": "Một số hình khối trong thực tiễn",
+        "lessons": [
+          {
+            "key": "B31",
+            "type": "lesson",
+            "baiIndex": 31,
+            "tenBai": "Bài 31. Hình trụ và hình nón",
+            "order": 1
+          },
+          {
+            "key": "B32",
+            "type": "lesson",
+            "baiIndex": 32,
+            "tenBai": "Bài 32. Hình cầu",
+            "order": 2
+          },
+          {
+            "key": "L10-01",
+            "type": "practice",
+            "baiIndex": null,
+            "tenBai": "Luyện tập chung",
+            "order": 3
+          },
+          {
+            "key": "END10",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 10",
+            "order": 4
+          }
+        ]
+      }
+    ],
+    "10": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Mệnh đề và tập hợp",
+        "chapTitle": "Mệnh đề và tập hợp",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Mệnh đề",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Tập hợp và các phép toán trên tập hợp",
+            "order": 2
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 3
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "chapTitle": "Bất phương trình và hệ bất phương trình bậc nhất hai ẩn",
+        "lessons": [
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Bất phương trình bậc nhất hai ẩn",
+            "order": 1
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Hệ bất phương trình bậc nhất hai ẩn",
+            "order": 2
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 3
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Hệ thức lượng trong tam giác",
+        "chapTitle": "Hệ thức lượng trong tam giác",
+        "lessons": [
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Giá trị lượng giác của một góc từ 0° đến 180°",
+            "order": 1
+          },
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Hệ thức lượng trong tam giác",
+            "order": 2
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 3
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Vectơ",
+        "chapTitle": "Vectơ",
+        "lessons": [
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Các khái niệm mở đầu",
+            "order": 1
+          },
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Tổng và hiệu của hai vectơ",
+            "order": 2
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Tích của một vectơ với một số",
+            "order": 3
+          },
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Vectơ trong mặt phẳng tọa độ",
+            "order": 4
+          },
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Tích vô hướng của hai vectơ",
+            "order": 5
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 6
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Các số đặc trưng của mẫu số liệu không ghép nhóm",
+        "chapTitle": "Các số đặc trưng của mẫu số liệu không ghép nhóm",
+        "lessons": [
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Số gần đúng và sai số",
+            "order": 1
+          },
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Các số đặc trưng đo xu thế trung tâm",
+            "order": 2
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Các số đặc trưng đo độ phân tán",
+            "order": 3
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Hàm số, đồ thị và ứng dụng",
+        "chapTitle": "Hàm số, đồ thị và ứng dụng",
+        "lessons": [
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Hàm số",
+            "order": 1
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Hàm số bậc hai",
+            "order": 2
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Dấu của tam thức bậc hai",
+            "order": 3
+          },
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Phương trình quy về phương trình bậc hai",
+            "order": 4
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Phương pháp tọa độ trong mặt phẳng",
+        "chapTitle": "Phương pháp tọa độ trong mặt phẳng",
+        "lessons": [
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Phương trình đường thẳng",
+            "order": 1
+          },
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Vị trí tương đối giữa hai đường thẳng. Góc và khoảng cách",
+            "order": 2
+          },
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Đường tròn trong mặt phẳng tọa độ",
+            "order": 3
+          },
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Ba đường conic",
+            "order": 4
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Đại số tổ hợp",
+        "chapTitle": "Đại số tổ hợp",
+        "lessons": [
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Quy tắc đếm",
+            "order": 1
+          },
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. Hoán vị, chỉnh hợp và tổ hợp",
+            "order": 2
+          },
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Nhị thức Newton",
+            "order": 3
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Tính xác suất theo định nghĩa cổ điển",
+        "chapTitle": "Tính xác suất theo định nghĩa cổ điển",
+        "lessons": [
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Biến cố và định nghĩa cổ điển của xác suất",
+            "order": 1
+          },
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Thực hành tính xác suất theo định nghĩa cổ điển",
+            "order": 2
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 3
+          }
+        ]
+      }
+    ],
+    "11": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Hàm số lượng giác và phương trình lượng giác",
+        "chapTitle": "Hàm số lượng giác và phương trình lượng giác",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Giá trị lượng giác của góc lượng giác",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Công thức lượng giác",
+            "order": 2
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Hàm số lượng giác",
+            "order": 3
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Phương trình lượng giác cơ bản",
+            "order": 4
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Dãy số. Cấp số cộng và cấp số nhân",
+        "chapTitle": "Dãy số. Cấp số cộng và cấp số nhân",
+        "lessons": [
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Dãy số",
+            "order": 1
+          },
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Cấp số cộng",
+            "order": 2
+          },
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Cấp số nhân",
+            "order": 3
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm",
+        "chapTitle": "Các số đặc trưng đo xu thế trung tâm của mẫu số liệu ghép nhóm",
+        "lessons": [
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Mẫu số liệu ghép nhóm",
+            "order": 1
+          },
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Các số đặc trưng đo xu thế trung tâm",
+            "order": 2
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 3
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Quan hệ song song trong không gian",
+        "chapTitle": "Quan hệ song song trong không gian",
+        "lessons": [
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Đường thẳng và mặt phẳng trong không gian",
+            "order": 1
+          },
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Hai đường thẳng song song",
+            "order": 2
+          },
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Đường thẳng và mặt phẳng song song",
+            "order": 3
+          },
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Hai mặt phẳng song song",
+            "order": 4
+          },
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Phép chiếu song song",
+            "order": 5
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 6
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Giới hạn. Hàm số liên tục",
+        "chapTitle": "Giới hạn. Hàm số liên tục",
+        "lessons": [
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Giới hạn của dãy số",
+            "order": 1
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Giới hạn của hàm số",
+            "order": 2
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Hàm số liên tục",
+            "order": 3
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Hàm số mũ và hàm số lôgarit",
+        "chapTitle": "Hàm số mũ và hàm số lôgarit",
+        "lessons": [
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Lũy thừa với số mũ thực",
+            "order": 1
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Lôgarit",
+            "order": 2
+          },
+          {
+            "key": "B20",
+            "type": "lesson",
+            "baiIndex": 20,
+            "tenBai": "Bài 20. Hàm số mũ và hàm số lôgarit",
+            "order": 3
+          },
+          {
+            "key": "B21",
+            "type": "lesson",
+            "baiIndex": 21,
+            "tenBai": "Bài 21. Phương trình, bất phương trình mũ và lôgarit",
+            "order": 4
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 7,
+        "tenChuong": "Chương 7. Quan hệ vuông góc trong không gian",
+        "chapTitle": "Quan hệ vuông góc trong không gian",
+        "lessons": [
+          {
+            "key": "B22",
+            "type": "lesson",
+            "baiIndex": 22,
+            "tenBai": "Bài 22. Hai đường thẳng vuông góc",
+            "order": 1
+          },
+          {
+            "key": "B23",
+            "type": "lesson",
+            "baiIndex": 23,
+            "tenBai": "Bài 23. Đường thẳng vuông góc với mặt phẳng",
+            "order": 2
+          },
+          {
+            "key": "B24",
+            "type": "lesson",
+            "baiIndex": 24,
+            "tenBai": "Bài 24. Phép chiếu vuông góc. Góc giữa đường thẳng và mặt phẳng",
+            "order": 3
+          },
+          {
+            "key": "B25",
+            "type": "lesson",
+            "baiIndex": 25,
+            "tenBai": "Bài 25. Hai mặt phẳng vuông góc",
+            "order": 4
+          },
+          {
+            "key": "B26",
+            "type": "lesson",
+            "baiIndex": 26,
+            "tenBai": "Bài 26. Khoảng cách",
+            "order": 5
+          },
+          {
+            "key": "B27",
+            "type": "lesson",
+            "baiIndex": 27,
+            "tenBai": "Bài 27. Thể tích",
+            "order": 6
+          },
+          {
+            "key": "END07",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 7",
+            "order": 7
+          }
+        ]
+      },
+      {
+        "chuongIndex": 8,
+        "tenChuong": "Chương 8. Các quy tắc tính xác suất",
+        "chapTitle": "Các quy tắc tính xác suất",
+        "lessons": [
+          {
+            "key": "B28",
+            "type": "lesson",
+            "baiIndex": 28,
+            "tenBai": "Bài 28. Biến cố hợp, biến cố giao, biến cố độc lập",
+            "order": 1
+          },
+          {
+            "key": "B29",
+            "type": "lesson",
+            "baiIndex": 29,
+            "tenBai": "Bài 29. Công thức cộng xác suất",
+            "order": 2
+          },
+          {
+            "key": "B30",
+            "type": "lesson",
+            "baiIndex": 30,
+            "tenBai": "Bài 30. Công thức nhân xác suất cho hai biến cố độc lập",
+            "order": 3
+          },
+          {
+            "key": "END08",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 8",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 9,
+        "tenChuong": "Chương 9. Đạo hàm",
+        "chapTitle": "Đạo hàm",
+        "lessons": [
+          {
+            "key": "B31",
+            "type": "lesson",
+            "baiIndex": 31,
+            "tenBai": "Bài 31. Định nghĩa và ý nghĩa của đạo hàm",
+            "order": 1
+          },
+          {
+            "key": "B32",
+            "type": "lesson",
+            "baiIndex": 32,
+            "tenBai": "Bài 32. Các quy tắc tính đạo hàm",
+            "order": 2
+          },
+          {
+            "key": "B33",
+            "type": "lesson",
+            "baiIndex": 33,
+            "tenBai": "Bài 33. Đạo hàm cấp hai",
+            "order": 3
+          },
+          {
+            "key": "END09",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 9",
+            "order": 4
+          }
+        ]
+      }
+    ],
+    "12": [
+      {
+        "chuongIndex": 1,
+        "tenChuong": "Chương 1. Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+        "chapTitle": "Ứng dụng đạo hàm để khảo sát và vẽ đồ thị hàm số",
+        "lessons": [
+          {
+            "key": "B01",
+            "type": "lesson",
+            "baiIndex": 1,
+            "tenBai": "Bài 1. Tính đơn điệu và cực trị của hàm số",
+            "order": 1
+          },
+          {
+            "key": "B02",
+            "type": "lesson",
+            "baiIndex": 2,
+            "tenBai": "Bài 2. Giá trị lớn nhất và giá trị nhỏ nhất của hàm số",
+            "order": 2
+          },
+          {
+            "key": "B03",
+            "type": "lesson",
+            "baiIndex": 3,
+            "tenBai": "Bài 3. Đường tiệm cận của đồ thị hàm số",
+            "order": 3
+          },
+          {
+            "key": "B04",
+            "type": "lesson",
+            "baiIndex": 4,
+            "tenBai": "Bài 4. Khảo sát sự biến thiên và vẽ đồ thị của hàm số",
+            "order": 4
+          },
+          {
+            "key": "B05",
+            "type": "lesson",
+            "baiIndex": 5,
+            "tenBai": "Bài 5. Ứng dụng đạo hàm để giải quyết một số vấn đề liên quan đến thực tiễn",
+            "order": 5
+          },
+          {
+            "key": "END01",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 1",
+            "order": 6
+          }
+        ]
+      },
+      {
+        "chuongIndex": 2,
+        "tenChuong": "Chương 2. Vectơ và hệ trục tọa độ trong không gian",
+        "chapTitle": "Vectơ và hệ trục tọa độ trong không gian",
+        "lessons": [
+          {
+            "key": "B06",
+            "type": "lesson",
+            "baiIndex": 6,
+            "tenBai": "Bài 6. Vectơ trong không gian",
+            "order": 1
+          },
+          {
+            "key": "B07",
+            "type": "lesson",
+            "baiIndex": 7,
+            "tenBai": "Bài 7. Hệ trục tọa độ trong không gian",
+            "order": 2
+          },
+          {
+            "key": "B08",
+            "type": "lesson",
+            "baiIndex": 8,
+            "tenBai": "Bài 8. Biểu thức tọa độ của các phép toán vectơ",
+            "order": 3
+          },
+          {
+            "key": "END02",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 2",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 3,
+        "tenChuong": "Chương 3. Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm",
+        "chapTitle": "Các số đặc trưng đo mức độ phân tán của mẫu số liệu ghép nhóm",
+        "lessons": [
+          {
+            "key": "B09",
+            "type": "lesson",
+            "baiIndex": 9,
+            "tenBai": "Bài 9. Khoảng biến thiên và khoảng tứ phân vị",
+            "order": 1
+          },
+          {
+            "key": "B10",
+            "type": "lesson",
+            "baiIndex": 10,
+            "tenBai": "Bài 10. Phương sai và độ lệch chuẩn",
+            "order": 2
+          },
+          {
+            "key": "END03",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 3",
+            "order": 3
+          }
+        ]
+      },
+      {
+        "chuongIndex": 4,
+        "tenChuong": "Chương 4. Nguyên hàm và tích phân",
+        "chapTitle": "Nguyên hàm và tích phân",
+        "lessons": [
+          {
+            "key": "B11",
+            "type": "lesson",
+            "baiIndex": 11,
+            "tenBai": "Bài 11. Nguyên hàm",
+            "order": 1
+          },
+          {
+            "key": "B12",
+            "type": "lesson",
+            "baiIndex": 12,
+            "tenBai": "Bài 12. Tích phân",
+            "order": 2
+          },
+          {
+            "key": "B13",
+            "type": "lesson",
+            "baiIndex": 13,
+            "tenBai": "Bài 13. Ứng dụng hình học của tích phân",
+            "order": 3
+          },
+          {
+            "key": "END04",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 4",
+            "order": 4
+          }
+        ]
+      },
+      {
+        "chuongIndex": 5,
+        "tenChuong": "Chương 5. Phương pháp tọa độ trong không gian",
+        "chapTitle": "Phương pháp tọa độ trong không gian",
+        "lessons": [
+          {
+            "key": "B14",
+            "type": "lesson",
+            "baiIndex": 14,
+            "tenBai": "Bài 14. Phương trình mặt phẳng",
+            "order": 1
+          },
+          {
+            "key": "B15",
+            "type": "lesson",
+            "baiIndex": 15,
+            "tenBai": "Bài 15. Phương trình đường thẳng trong không gian",
+            "order": 2
+          },
+          {
+            "key": "B16",
+            "type": "lesson",
+            "baiIndex": 16,
+            "tenBai": "Bài 16. Công thức tính góc trong không gian",
+            "order": 3
+          },
+          {
+            "key": "B17",
+            "type": "lesson",
+            "baiIndex": 17,
+            "tenBai": "Bài 17. Phương trình mặt cầu",
+            "order": 4
+          },
+          {
+            "key": "END05",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 5",
+            "order": 5
+          }
+        ]
+      },
+      {
+        "chuongIndex": 6,
+        "tenChuong": "Chương 6. Xác suất có điều kiện",
+        "chapTitle": "Xác suất có điều kiện",
+        "lessons": [
+          {
+            "key": "B18",
+            "type": "lesson",
+            "baiIndex": 18,
+            "tenBai": "Bài 18. Xác suất có điều kiện",
+            "order": 1
+          },
+          {
+            "key": "B19",
+            "type": "lesson",
+            "baiIndex": 19,
+            "tenBai": "Bài 19. Công thức xác suất toàn phần và công thức Bayes",
+            "order": 2
+          },
+          {
+            "key": "END06",
+            "type": "chapter_end",
+            "baiIndex": null,
+            "tenBai": "Bài tập cuối chương 6",
+            "order": 3
+          }
+        ]
+      }
+    ]
+  }
+}

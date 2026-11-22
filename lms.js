@@ -50,6 +50,7 @@ function apLmsOpenStudent(){
   if(apLmsEl('public-app'))apLmsEl('public-app').style.display='none';
   if(apLmsEl('admin-app'))apLmsEl('admin-app').style.display='none';
   apLmsEl('ap-lms-app').hidden=false;apLmsEl('ap-lms-app').style.display='block';
+  apLmsUpdateSoundButton_();
   AP_LMS_UI.session=sessionStorage.getItem('ap_lms_student_token')||'';
   if(AP_LMS_UI.session){apLmsLoadDashboard();}else{apLmsScreen('ap-lms-login');apLmsEl('ap-lms-name').focus();}
 }
@@ -57,7 +58,7 @@ function apLmsExit(){
   apLmsEl('ap-lms-app').hidden=true;apLmsEl('ap-lms-app').style.display='none';
   if(typeof showLandingMode==='function')showLandingMode();
 }
-function apLmsLogout(){if(AP_LMS_UI.quiz?.syncTimer)clearTimeout(AP_LMS_UI.quiz.syncTimer);AP_LMS_UI.session='';AP_LMS_UI.student=null;AP_LMS_UI.quiz=null;sessionStorage.removeItem('ap_lms_student_token');apLmsClearError();apLmsScreen('ap-lms-login');apLmsEl('ap-lms-name').value='';apLmsEl('ap-lms-phone').value='';apLmsEl('ap-lms-candidates').innerHTML='';AP_LMS_UI.candidate=null;}
+function apLmsLogout(){if(AP_LMS_UI.quiz?.syncTimer)clearTimeout(AP_LMS_UI.quiz.syncTimer);AP_LMS_UI.session='';AP_LMS_UI.student=null;AP_LMS_UI.quiz=null;AP_LMS_UI.boardData=null;AP_LMS_UI.game=null;sessionStorage.removeItem('ap_lms_student_token');apLmsClearError();apLmsScreen('ap-lms-login');apLmsEl('ap-lms-name').value='';apLmsEl('ap-lms-phone').value='';apLmsEl('ap-lms-candidates').innerHTML='';AP_LMS_UI.candidate=null;}
 function apLmsNameSearch(){
   clearTimeout(AP_LMS_UI.queryTimer);AP_LMS_UI.candidate=null;apLmsClearError();const val=apLmsEl('ap-lms-name').value.trim();
   apLmsEl('ap-lms-selected').textContent='';const box=apLmsEl('ap-lms-candidates');box.innerHTML='';
@@ -105,46 +106,136 @@ async function apLmsCheckBackend(){
   AP_LMS_BACKEND_CHECKED_AT=Date.now();return true;
 }
 function apLmsDate(value){if(!value)return '';const d=new Date(value);return Number.isFinite(d.valueOf())?d.toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):String(value);}
+function apLmsSgkFold_(value){
+  return String(value==null?'':value).normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[đĐ]/g,'d').toLowerCase().replace(/\s+/g,' ').trim();
+}
+function apLmsSgkNatural_(a,b){
+  return String(a).localeCompare(String(b),'vi',{numeric:true,sensitivity:'base'});
+}
+
+// V1.7.0 - client presentation only. XP is authoritative in Apps Script.
+function apLmsStarCount_(score){const x=Number(score);return score===null||score===undefined?0:x>=9.999?3:x>=8?2:x>=5?1:0;}
+function apLmsStarsHtml_(score){
+  const count=apLmsStarCount_(score);
+  return `<span class="lms-stars" role="img" aria-label="${count} trên 3 sao">${Array.from({length:3},(_,i)=>`<span class="${i<count?'earned':'empty'}" aria-hidden="true">★</span>`).join('')}</span>`;
+}
+function apLmsSoundEnabled_(){try{return localStorage.getItem('ap_lms_sound_enabled')==='yes';}catch(e){return false;}}
+function apLmsUpdateSoundButton_(){const b=apLmsEl('ap-lms-sound-toggle');if(!b)return;const on=apLmsSoundEnabled_();b.setAttribute('aria-pressed',on?'true':'false');b.innerHTML=on?'<i class="bi bi-volume-up"></i> Âm thanh: Bật':'<i class="bi bi-volume-mute"></i> Âm thanh: Tắt';}
+function apLmsToggleSound(){const on=!apLmsSoundEnabled_();try{localStorage.setItem('ap_lms_sound_enabled',on?'yes':'no');}catch(e){}apLmsUpdateSoundButton_();if(on)apLmsBeep_('tap');}
+function apLmsBeep_(kind){
+  if(!apLmsSoundEnabled_())return;
+  try{
+    const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
+    const ctx=AP_LMS_UI.audioCtx||(AP_LMS_UI.audioCtx=new AudioCtx());
+    if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+    const start=ctx.currentTime,notes=kind==='win'?[523,659,784]:[640];
+    notes.forEach((freq,i)=>{const o=ctx.createOscillator(),g=ctx.createGain(),t=start+i*.11;
+      o.type='sine';o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);
+      g.gain.exponentialRampToValueAtTime(.045,t+.018);g.gain.exponentialRampToValueAtTime(.0001,t+.18);
+      o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+.185);});
+  }catch(e){}
+}
+function apLmsMission_(topics){
+  const ready=(topics||[]).filter(t=>Number(t.soCauHoi??t.count??0)>0);
+  return ready.find(t=>t.best_score===null||t.best_score===undefined)||
+    ready.filter(t=>apLmsStarCount_(t.best_score)<3).sort((a,b)=>apLmsStarCount_(a.best_score)-apLmsStarCount_(b.best_score))[0]||ready[0]||null;
+}
+function apLmsGameHeader_(game,topics){
+  const g=game||{},rank=g.level||{name:'Tân binh',progress_percent:0,remaining:200,next_name:'Người khám phá'};
+  const mission=apLmsMission_(topics);
+  return `<section class="lms-game-hero" aria-label="Hồ sơ chiến tích"><div class="lms-game-hero-heading"><div><span class="lms-game-eyebrow">HỒ SƠ CHIẾN TÍCH</span><h3><i class="bi bi-trophy-fill"></i> ${apLmsEsc(rank.name)}</h3><p>Chăm chỉ từng ngày, vững vàng từng bài.</p></div><div class="lms-game-xp"><strong>${Number(g.xp_total||0)}</strong><span>XP tổng</span></div></div>
+   <div class="lms-game-stats"><span><i class="bi bi-fire"></i> ${Number(g.streak||0)} ngày chăm chỉ</span><span><i class="bi bi-calendar-week"></i> ${Number(g.xp_week||0)} XP tuần này</span><span><i class="bi bi-calendar-month"></i> ${Number(g.xp_month||0)} XP tháng này</span></div>
+   <div class="lms-game-progress-copy"><span>Tiến tới ${apLmsEsc(rank.next_name)}</span><b>${rank.next_xp===null?'Đã đạt cấp cao nhất':`Còn ${Number(rank.remaining||0)} XP`}</b></div>
+   <div class="lms-game-track" role="progressbar" aria-valuenow="${Number(rank.progress_percent||0)}" aria-valuemin="0" aria-valuemax="100"><span style="width:${Math.max(0,Math.min(100,Number(rank.progress_percent||0)))}%"></span></div></section>
+   ${mission?`<section class="lms-game-mission"><div><small><i class="bi bi-bullseye"></i> NHIỆM VỤ HÔM NAY</small><h3>${apLmsEsc(mission.tenBai||mission.topic)}</h3><p>${apLmsEsc(mission.tenChuong||mission.chapter||'')} · ${Math.min(10,Number(mission.soCauHoi??mission.count??0))} câu/lượt · ${apLmsStarCount_(mission.best_score)} sao hiện tại</p></div><button class="lms-btn teal lms-submit-lock" type="button" data-quick-topic="${apLmsEsc(mission.topic_id)}">Vào chinh phục ngay <i class="bi bi-arrow-right"></i></button></section>`:''}`;
+}
+function apLmsLeaderboardRows_(r){
+  if(!r)return '<div class="lms-game-muted">Chưa có kết quả trong thời gian này.</div>';
+  const rows=(r.top5||[]).map(x=>`<div class="lms-game-rank ${x.me?'is-me':''}"><strong class="lms-game-rank-num">${Number(x.rank)}</strong><span>${x.me?'Em (tài khoản hiện tại)':apLmsEsc(x.name)}</span><b>${Number(x.xp)} XP</b></div>`).join('');
+  const own=r.own_rank>5?`<div class="lms-game-own">Hạng ${Number(r.own_rank)} của em · ${Number(r.own_xp)} XP${r.gap_to_top5!=null?' · Cách Top 5 '+Number(r.gap_to_top5)+' XP':''}</div>`:'';
+  return (rows||'<div class="lms-game-muted">Chưa có kết quả trong thời gian này.</div>')+own;
+}
+function apLmsShowLeaderboard_(period){
+  AP_LMS_UI.boardPeriod=period==='month'?'month':'week';
+  const container=apLmsEl('ap-lms-board-rows'),data=AP_LMS_UI.boardData;
+  if(container)container.innerHTML=data?apLmsLeaderboardRows_(data[AP_LMS_UI.boardPeriod]):'<div class="lms-game-muted">Đang cập nhật bảng vàng...</div>';
+  document.querySelectorAll('#ap-lms-app [data-board-period]').forEach(b=>{const active=b.dataset.boardPeriod===AP_LMS_UI.boardPeriod;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+}
+async function apLmsLoadLeaderboard_(token){
+  if(!token)return;
+  try{const data=await apLmsApi('apLmsGameLeaderboard',{session_token:token});
+    if(token!==AP_LMS_UI.session||!apLmsEl('ap-lms-board-rows'))return;
+    if(data?.disabled){apLmsEl('ap-lms-board-rows').innerHTML='<div class="lms-game-muted">Bảng Vàng đang được giáo viên tắt để bảo vệ thông tin lớp học.</div>';return;}
+    AP_LMS_UI.boardData=data;apLmsShowLeaderboard_(AP_LMS_UI.boardPeriod||'week');
+  }catch(e){if(token===AP_LMS_UI.session){const el=apLmsEl('ap-lms-board-rows');if(el)el.innerHTML='<div class="lms-game-muted">Bảng Vàng đang cập nhật. Em vẫn có thể làm bài bình thường.</div>';}}
+}
+function apLmsBestCombo_(q,review){
+  const byId=new Map((review||[]).map(x=>[x.uid,x.answer]));let best=0,run=0;
+  (q.questions||[]).forEach(x=>{if(q.answers[x.uid]&&q.answers[x.uid]===byId.get(x.uid)){run++;best=Math.max(best,run);}else run=0;});
+  return best;
+}
+
 function apLmsTopicCard_(t){
-  const best=t.best_score===null?'Chưa làm':(t.best_score+'/10 điểm');
-  const counts=Array.isArray(t.levels)?t.levels:[];
-  return `<article class="lms-assignment lms-topic-card" data-topic-search="${apLmsEsc((t.chapter+' '+t.topic).toLocaleLowerCase('vi-VN'))}">
-    <div class="lms-topic-head"><span class="lms-pill"><i class="bi bi-book-half"></i> Khối ${apLmsEsc(t.grade)}</span><span class="lms-topic-count">${Number(t.count)} câu khả dụng</span></div>
-    <h3>${apLmsEsc(t.topic)}</h3><p>${apLmsEsc(t.chapter)}</p>
-    <div class="lms-topic-info"><span><i class="bi bi-shuffle"></i> ${Math.min(10,Number(t.count))} câu/ngẫu nhiên</span><span><i class="bi bi-award"></i> ${apLmsEsc(best)}</span></div>
-    <small class="lms-topic-hint">${counts.filter(n=>Number(n)>0).length||1} mức độ hiện có · Thang 10 · Không yêu cầu mã đề</small>
-    <button class="lms-btn teal lms-submit-lock" type="button" data-topic-id="${apLmsEsc(t.topic_id)}">${t.best_score===null?'Làm bài ngay':'Luyện lại chủ đề'} <i class="bi bi-arrow-right"></i></button>
+  const count=Number(t.soCauHoi??t.count??0),available=count>0;
+  const scored=t.best_score!==null && t.best_score!==undefined;
+  const best=scored?`${Number(t.best_score).toLocaleString('vi-VN')}/10 điểm`:'Chưa làm';
+  const label=t.tenBai||t.topic,source=t.nguonChuong,stars=apLmsStarsHtml_(t.best_score);
+  const perfect=apLmsStarCount_(t.best_score)===3;
+  return `<article class="lms-assignment lms-topic-card lms-sgk-lesson ${available?'':'is-unavailable'} ${perfect?'lms-perfect':''}" role="listitem">
+    <div class="lms-topic-head"><span class="lms-pill"><i class="bi bi-book"></i> ${apLmsEsc(t.sgk_type==='supplemental'?'Chủ đề bổ sung':t.sgk_type==='practice'?'Luyện tập':t.sgk_type==='chapter_end'?'Ôn tập chương':'Bài học')}</span>
+    <span class="lms-topic-count">${available?count+' câu hỏi':'Đang cập nhật'}</span></div>
+    <h3>${apLmsEsc(label)}</h3><div class="lms-stars-row">${stars}${perfect?'<span class="lms-perfect-badge">Hoàn hảo</span>':''}</div>${source?`<p class="lms-sgk-source">Nguồn: ${apLmsEsc(source)}</p>`:''}
+    ${available?`<div class="lms-topic-info"><span><i class="bi bi-shuffle"></i> ${Math.min(10,count)} câu/lượt</span><span><i class="bi bi-award"></i> ${apLmsEsc(best)}</span></div>
+      <button class="lms-btn teal lms-submit-lock" type="button" data-topic-id="${apLmsEsc(t.topic_id)}">${scored?'Luyện lại':'Làm bài ngay'} <i class="bi bi-arrow-right"></i></button>`:
+      `<p class="lms-sgk-wait"><i class="bi bi-clock-history"></i> Chưa có câu hỏi đã duyệt. Hãy chọn bài khác.</p><button class="lms-btn ghost" type="button" disabled>Đang cập nhật</button>`}
   </article>`;
 }
 function apLmsSelectChapter_(chapter){
   AP_LMS_UI.selectedChapter=chapter;
   apLmsRenderTopicCatalog_(apLmsEl('ap-lms-topic-search')?.value||'');
-  const out=apLmsEl('ap-lms-topic-list');
-  if(out&&typeof out.scrollIntoView==='function')out.scrollIntoView({block:'start',behavior:'smooth'});
 }
 function apLmsRenderTopicCatalog_(query=''){
   const el=apLmsEl('ap-lms-topic-list');if(!el)return;
-  const items=AP_LMS_UI.autoTopics||[];
-  const q=String(query||'').toLocaleLowerCase('vi-VN').trim();
-  const shown=items.filter(t=>(t.chapter+' '+t.topic).toLocaleLowerCase('vi-VN').includes(q));
-  const chapters=new Map();shown.forEach(t=>{if(!chapters.has(t.chapter))chapters.set(t.chapter,[]);chapters.get(t.chapter).push(t);});
-  const selected=AP_LMS_UI.selectedChapter;
-  if(!selected){
-    const rows=Array.from(chapters.entries()).sort((a,b)=>a[0].localeCompare(b[0],'vi'));
-    el.innerHTML=`<div class="lms-step-heading"><span class="lms-step-number">1</span><div><h3>Chọn chương em muốn học</h3><p>Chạm vào một chương để xem các bài tương ứng.</p></div></div>`+
-      (rows.length?`<div class="lms-chapter-grid">${rows.map(([chapter,topics],i)=>{
-        const done=topics.filter(t=>t.best_score!==null&&Number(t.best_score)>=6).length;
-        const count=topics.reduce((n,t)=>n+Number(t.count||0),0);
-        return `<button type="button" class="lms-chapter-card" data-chapter-index="${i}"><span class="lms-chapter-icon"><i class="bi bi-journal-bookmark"></i></span><span class="lms-chapter-name">${apLmsEsc(chapter)}</span><span class="lms-chapter-meta">${topics.length} bài · ${count} câu · ${done} bài đạt</span><span class="lms-chapter-open">Xem các bài <i class="bi bi-chevron-right"></i></span></button>`;
-      }).join('')}</div>`:'<div class="lms-empty">Không tìm thấy chương phù hợp.</div>');
-    el.querySelectorAll('[data-chapter-index]').forEach(btn=>btn.addEventListener('click',()=>apLmsSelectChapter_(rows[Number(btn.dataset.chapterIndex)][0])));
-    return;
-  }
-  const topics=chapters.get(selected)||[];
-  el.innerHTML=`<nav class="lms-breadcrumb" aria-label="Điều hướng chương"><button type="button" id="ap-lms-back-chapters"><i class="bi bi-arrow-left"></i> Tất cả chương</button><span aria-hidden="true">/</span><b>${apLmsEsc(selected)}</b></nav>
-    <div class="lms-step-heading"><span class="lms-step-number">2</span><div><h3>Chọn bài để làm ngay</h3><p>${topics.length} bài trong ${apLmsEsc(selected)} · không cần mã đề</p></div></div>`+
-    (topics.length?`<div class="lms-grid">${topics.map(apLmsTopicCard_).join('')}</div>`:'<div class="lms-empty">Không tìm thấy bài phù hợp với bộ lọc. Hãy thử từ khóa khác.</div>');
-  apLmsEl('ap-lms-back-chapters')?.addEventListener('click',()=>apLmsSelectChapter_(null));
+  const all=AP_LMS_UI.autoTopics||[];
+  const q=apLmsSgkFold_(query);
+  const onlyReady=!!apLmsEl('ap-lms-only-ready')?.checked;
+  const show=all.filter(t=>{
+    if(onlyReady&&Number(t.soCauHoi??t.count??0)<=0)return false;
+    if(!q)return true;
+    const hay=apLmsSgkFold_([t.tenChuong||t.chapter,t.tenBai||t.topic,t.nguonChuong||'',t.baiIndex?'Bài '+t.baiIndex:''].join(' '));
+    // Also match "bai 01", "bai 1.", or a bare lesson number.
+    const numeric=q.match(/^(?:bai\s*)?0*(\d+)$/);
+    return hay.includes(q)||!!(numeric&&Number(t.baiIndex)===Number(numeric[1]));
+  });
+  const byChapter=new Map();
+  show.forEach(t=>{
+    const key=String(t.chuongIndex??999)+'|'+String(t.tenChuong||t.chapter);
+    if(!byChapter.has(key))byChapter.set(key,[]);
+    byChapter.get(key).push(t);
+  });
+  const entries=Array.from(byChapter.entries()).sort((a,b)=>{
+    const x=a[1][0],y=b[1][0];
+    return Number(x.chuongIndex??999)-Number(y.chuongIndex??999)||apLmsSgkNatural_(x.tenChuong||x.chapter,y.tenChuong||y.chapter);
+  });
+  if(!entries.length){el.innerHTML='<div class="lms-empty">Không tìm thấy bài phù hợp. Thử bỏ bộ lọc hoặc từ khóa khác.</div>';return;}
+  el.innerHTML=`<div class="lms-step-heading"><span class="lms-step-number"><i class="bi bi-list-ol"></i></span><div><h3>Chương → Bài trong sách giáo khoa</h3><p>Toán · Kết nối tri thức với cuộc sống · Khối ${apLmsEsc(AP_LMS_UI.student?.grade||'')}</p></div></div>
+    <div class="lms-sgk-accordion">${entries.map(([key,items])=>{
+       const first=items[0],ready=items.filter(t=>Number(t.soCauHoi??t.count??0)>0).length;
+       const title=first.tenChuong||first.chapter;
+       const conquered=items.filter(t=>Number(t.soCauHoi??t.count??0)>0&&apLmsStarCount_(t.best_score)>=1).length;
+       const pct=ready?Math.round(conquered/ready*100):0;
+       const isSupplement=Number(first.chuongIndex)===999;
+       const open=!!q || AP_LMS_UI.selectedChapter===key;
+       const sorted=items.slice().sort((a,b)=>Number(a.sgk_order??999999)-Number(b.sgk_order??999999)||apLmsSgkNatural_(a.tenBai||a.topic,b.tenBai||b.topic));
+       return `<details class="lms-sgk-chapter" data-chapter-key="${apLmsEsc(key)}" ${open?'open':''}>
+         <summary><span class="lms-sgk-chapter-icon"><i class="bi bi-journals"></i></span><span class="lms-sgk-chapter-text"><strong>${apLmsEsc(title)}</strong><small>Đã chinh phục ${conquered}/${ready} bài · ${pct}% · ${ready}/${sorted.length} bài có câu hỏi</small><span class="lms-chapter-progress" role="progressbar" aria-label="Tiến độ chương" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></span></span><i class="bi bi-chevron-down lms-sgk-chevron"></i></summary>
+         <div class="lms-sgk-lesson-grid" role="list">${sorted.map(apLmsTopicCard_).join('')}</div>
+       </details>`;
+    }).join('')}</div>`;
+  el.querySelectorAll('.lms-sgk-chapter').forEach(d=>d.addEventListener('toggle',()=>{
+    if(d.open)AP_LMS_UI.selectedChapter=d.dataset.chapterKey;
+  }));
   el.querySelectorAll('[data-topic-id]').forEach(btn=>btn.addEventListener('click',()=>apLmsStartAuto(btn.dataset.topicId)));
 }
 async function apLmsLoadDashboard(){
@@ -152,15 +243,25 @@ async function apLmsLoadDashboard(){
   apLmsEl('ap-lms-dashboard-content').innerHTML='<div class="lms-spinner">Đang tải danh mục chương và bài đúng khối của em...</div>';
   try{
     const d=await apLmsApi('apLmsAutoCatalog',{session_token:AP_LMS_UI.session});
-    AP_LMS_UI.student=d.student;AP_LMS_UI.autoTopics=Array.isArray(d.topics)?d.topics:[];AP_LMS_UI.selectedChapter=null;
+    AP_LMS_UI.student=d.student;AP_LMS_UI.autoTopics=Array.isArray(d.topics)?d.topics:[];AP_LMS_UI.selectedChapter=null;AP_LMS_UI.game=d.game||null;AP_LMS_UI.boardData=null;AP_LMS_UI.boardPeriod='week';
     const noBank=d.bank_connected===false;
     apLmsEl('ap-lms-dashboard-content').innerHTML=`<div class="lms-title-row"><div><h2>Xin chào, ${apLmsEsc(d.student.name)}!</h2><p>Khối ${apLmsEsc(d.student.grade)} · Lớp ${apLmsEsc(d.student.class_id)} · Em chọn chương và bài để luyện tập ngay.</p></div><span class="lms-pill"><i class="bi bi-mortarboard-fill"></i> Tự chọn bài học</span></div>
-    <div class="lms-metrics"><div class="lms-metric"><strong>${AP_LMS_UI.autoTopics.length}</strong><span>Chủ đề có câu hỏi</span></div><div class="lms-metric"><strong>${Number(d.completed||0)}</strong><span>Đã đạt 6 điểm</span></div><div class="lms-metric"><strong>${Number(d.pending||0)}</strong><span>Chưa đạt hoặc chưa làm</span></div></div>
+    ${apLmsGameHeader_(AP_LMS_UI.game,AP_LMS_UI.autoTopics)}
+    <div class="lms-metrics"><div class="lms-metric"><strong>${AP_LMS_UI.autoTopics.filter(t=>Number(t.soCauHoi??t.count??0)>0).length}</strong><span>Bài có câu hỏi</span></div><div class="lms-metric"><strong>${Number(d.completed||0)}</strong><span>Đã đạt 6 điểm</span></div><div class="lms-metric"><strong>${Number(d.pending||0)}</strong><span>Chưa đạt hoặc chưa làm</span></div></div>
+    <section class="lms-game-board"><details id="ap-lms-board-details"><summary class="lms-game-board-opener"><i class="bi bi-award"></i> Bảng Vàng cùng lớp <span>Chạm để xem Top 5 tuần/tháng</span></summary><div class="lms-game-board-head"><div><span class="lms-game-eyebrow">BẢNG VÀNG CÙNG LỚP</span><h3><i class="bi bi-award"></i> Học đều, tiến bộ đều</h3></div><div class="lms-game-tabs" role="group" aria-label="Xem xếp hạng theo thời gian"><button type="button" class="active" data-board-period="week" aria-pressed="true">Tuần</button><button type="button" data-board-period="month" aria-pressed="false">Tháng</button></div></div><div id="ap-lms-board-rows" aria-live="polite"><div class="lms-game-muted">Đang tải Bảng Vàng...</div></div><p class="lms-game-privacy">Chỉ xếp hạng trong cùng lớp; tên bạn học được viết tắt. Luyện tập để tiến bộ, không cần so sánh với người khác. Xếp hạng có thể chậm cập nhật tối đa 2–3 phút.</p></details></section>
     ${noBank?'<div class="lms-empty">Ngân hàng chưa kết nối. Em vẫn đăng nhập được nhưng chưa có bài để làm.</div>':
-      `<div class="lms-topic-toolbar"><label for="ap-lms-topic-search">Tìm chương hoặc bài học</label><input id="ap-lms-topic-search" type="search" placeholder="Ví dụ: phân số, phương trình, hình học..." autocomplete="off"><p>Chủ đề có 1–10 câu: làm toàn bộ; nhiều hơn 10 câu: hệ thống chọn ngẫu nhiên đúng 10 câu. Điểm quy đổi về thang 10.</p></div><div id="ap-lms-topic-list"></div>`}`;
+      `<div class="lms-topic-toolbar"><label for="ap-lms-topic-search"><i class="bi bi-search"></i> Tìm nhanh theo số bài hoặc tên bài</label><input id="ap-lms-topic-search" type="search" placeholder="Nhập Bài 1, Bài 10, phân số, hình học…" autocomplete="off"><label class="lms-sgk-toggle"><input type="checkbox" id="ap-lms-only-ready"> Chỉ hiện bài đã có câu hỏi</label><p>Theo đúng thứ tự SGK. Bài chưa có câu hỏi được giữ trong danh mục nhưng chưa thể làm. Có 1–10 câu: lấy toàn bộ; hơn 10 câu: chọn ngẫu nhiên 10. Điểm theo thang 10.</p></div><div id="ap-lms-topic-list"></div>`}`;
+    document.querySelectorAll('#ap-lms-app [data-board-period]').forEach(b=>b.addEventListener('click',()=>apLmsShowLeaderboard_(b.dataset.boardPeriod)));
+    const missionButton=apLmsEl('ap-lms-dashboard-content')?.querySelector('[data-quick-topic]');
+    if(missionButton)missionButton.addEventListener('click',()=>apLmsStartAuto(missionButton.dataset.quickTopic));
+    // Leaderboard is intentionally non-blocking: the student may start a quiz immediately.
+    const board=apLmsEl('ap-lms-board-details');if(board)board.addEventListener('toggle',()=>{
+      if(board.open&&!AP_LMS_UI.boardData&&!AP_LMS_UI.boardLoading){AP_LMS_UI.boardLoading=true;apLmsLoadLeaderboard_(AP_LMS_UI.session).finally(()=>AP_LMS_UI.boardLoading=false);}
+    });
     if(!noBank){apLmsRenderTopicCatalog_();
       apLmsEl('ap-lms-topic-search').addEventListener('input',e=>apLmsRenderTopicCatalog_(e.target.value));
-      if(!AP_LMS_UI.autoTopics.length)apLmsEl('ap-lms-topic-list').innerHTML='<div class="lms-empty">Khối này chưa có câu hỏi READY hợp lệ. Giáo viên có thể duyệt bổ sung ngân hàng.</div>';
+      apLmsEl('ap-lms-only-ready')?.addEventListener('change',()=>apLmsRenderTopicCatalog_(apLmsEl('ap-lms-topic-search').value));
+      if(!AP_LMS_UI.autoTopics.length)apLmsEl('ap-lms-topic-list').innerHTML='<div class="lms-empty">Khối này chưa có mục lục cấu hình. Vui lòng báo giáo viên.</div>';
     }
   }catch(e){
     if(/LMS_UNAUTHORIZED/.test(e.message||'')){apLmsLogout();apLmsError('Phiên học sinh hết hạn. Vui lòng đăng nhập lại.');}
@@ -214,7 +315,8 @@ async function apLmsStartAuto(topicId){
     }
     if(!a.questions?.length||a.questions.length>10)throw new Error('Chủ đề không có bộ câu hỏi hợp lệ.');
     const quiz={isAuto:true,assignmentId:topicId,topicId,level:1,attemptToken:a.attempt_token,
-      questions:a.questions,answers:{},current:0,title:a.title,studentId:sid,totalQuestions:a.questions.length};
+      questions:a.questions,answers:{},current:0,title:a.title,studentId:sid,totalQuestions:a.questions.length,
+      previousBest:AP_LMS_UI.autoTopics?.find(t=>t.topic_id===topicId)?.best_score??null};
     try{
       const raw=JSON.parse(localStorage.getItem(apLmsDraftKey(quiz))||'null');
       if(raw?.answers)quiz.answers=Object.fromEntries(Object.entries(raw.answers).filter(([uid,ans])=>
@@ -240,7 +342,7 @@ function apLmsRenderQuiz(){
   apLmsEl('ap-lms-cancel-submit').addEventListener('click',()=>apLmsEl('ap-lms-submit-dialog').close());
   apLmsEl('ap-lms-confirm-submit').addEventListener('click',()=>{apLmsEl('ap-lms-submit-dialog').close();apLmsSubmit();});
   apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-qindex]').forEach(b=>b.addEventListener('click',()=>{q.current=Number(b.dataset.qindex);apLmsRenderQuiz();}));
-  apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{q.answers[item.uid]=b.dataset.answer;apLmsSaveDraft();if(q.current<n-1)q.current++;apLmsRenderQuiz();}));
+  apLmsEl('ap-lms-quiz-content').querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{q.answers[item.uid]=b.dataset.answer;apLmsBeep_('tap');apLmsSaveDraft();if(q.current<n-1)q.current++;apLmsRenderQuiz();}));
 }
 function apLmsConfirmSubmit(){
   if(AP_LMS_UI.busy||!AP_LMS_UI.quiz)return;
@@ -278,8 +380,17 @@ async function apLmsSubmit(){
     apLmsScreen('ap-lms-result');
     const review=Array.isArray(r.review)?r.review:[];
     const motivation=apLmsMotivation_(r.score);
-    const confetti=motivation.celebrate?`<div class="lms-confetti" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i};left:${3+(i*23)%93}%"></i>`).join('')}</div>`:'';
-    apLmsEl('ap-lms-result-content').innerHTML=`<div class="lms-card lms-celebration" style="text-align:center">${confetti}<div class="lms-hero-icon" style="margin:0 auto 12px"><i class="bi ${motivation.icon}"></i></div><h2>${motivation.title}</h2><p>${motivation.note}</p><div class="lms-score-big">${Number(r.score)}/10</div><p>Đúng ${Number(r.correct_count??0)}/${Number(r.total_count||q.questions.length)} câu · ${r.passed?'Đã đạt yêu cầu':'Cố gắng thêm để đạt từ 6 điểm'}${r.duplicate?' · Kết quả đã lưu trước đó':''}</p><div class="lms-actions-inline" style="justify-content:center;margin-top:15px"><button class="lms-btn ghost" type="button" id="ap-lms-home"><i class="bi bi-grid"></i> Chọn bài khác</button><button class="lms-btn teal" type="button" id="ap-lms-repeat"><i class="bi bi-arrow-clockwise"></i> Làm lại bài này</button>${r.passed&&!q.isAuto&&q.level<3?'<button class="lms-btn" type="button" id="ap-lms-nextlevel">Làm cấp tiếp theo</button>':''}</div></div>
+    const combo=apLmsBestCombo_(q,review);
+    const oldBest=q.previousBest===null||q.previousBest===undefined?-1:Number(q.previousBest);
+    const newRecord=q.isAuto&&!r.duplicate&&Number(r.score)>oldBest;
+    const canCelebrate=(Number(r.score)>=8||newRecord)&&!r.duplicate;
+    if(canCelebrate)apLmsBeep_('win');
+    const stars=apLmsStarsHtml_(r.score);
+    const xpGain=Number(r.gamification?.xp_earned||0);
+    const missingPerfect=Math.max(0,Number(r.total_count||q.questions.length)-Number(r.correct_count??0));
+    const encouragement=Number(r.score)<10&&q.isAuto?(missingPerfect===1?'Chỉ cần đúng thêm 1 câu nữa là đạt 3 sao!':'Em còn '+missingPerfect+' câu để đạt 3 sao. Hãy xem lời giải và thử lại nhé!'):'';
+    const confetti=canCelebrate?`<div class="lms-confetti" aria-hidden="true">${Array.from({length:18},(_,i)=>`<i style="--i:${i};left:${3+(i*23)%93}%"></i>`).join('')}</div>`:'';
+    apLmsEl('ap-lms-result-content').innerHTML=`<div class="lms-card lms-celebration" style="text-align:center">${confetti}<div class="lms-hero-icon" style="margin:0 auto 12px"><i class="bi ${motivation.icon}"></i></div><h2>${motivation.title}</h2><p>${motivation.note}</p><div class="lms-score-big">${Number(r.score)}/10</div><div class="lms-game-result-stars">${stars}</div>${combo>=2?`<p class="lms-game-combo">Chuỗi đúng liên tiếp x${combo}!</p>`:''}${encouragement?`<p class="lms-game-encourage">${apLmsEsc(encouragement)}</p>`:''}${r.gamification&&!r.duplicate?`<p class="lms-game-earned">+${xpGain} XP · Tổng ${Number(r.gamification.xp_total||0)} XP</p>`:''}<p>Đúng ${Number(r.correct_count??0)}/${Number(r.total_count||q.questions.length)} câu · ${r.passed?'Đã đạt yêu cầu':'Cố gắng thêm để đạt từ 6 điểm'}${r.duplicate?' · Kết quả đã lưu trước đó':''}</p><div class="lms-actions-inline" style="justify-content:center;margin-top:15px"><button class="lms-btn ghost" type="button" id="ap-lms-home"><i class="bi bi-grid"></i> Chọn bài khác</button><button class="lms-btn teal" type="button" id="ap-lms-repeat"><i class="bi bi-arrow-clockwise"></i> Thử lại ngay</button>${r.passed&&!q.isAuto&&q.level<3?'<button class="lms-btn" type="button" id="ap-lms-nextlevel">Làm cấp tiếp theo</button>':''}</div></div>
     ${apLmsReviewHtml_(q,review)}`;
     apLmsEl('ap-lms-home').addEventListener('click',apLmsLoadDashboard);
     if(apLmsEl('ap-lms-nextlevel'))apLmsEl('ap-lms-nextlevel').addEventListener('click',()=>apLmsStart(q.assignmentId,q.level+1));

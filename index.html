@@ -1529,10 +1529,10 @@ p,li,.chat-bubble { text-wrap:pretty; }
   <!-- Export bảng điểm: SheetJS & html2canvas, tự tải trước khi sử dụng -->
   <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<link rel="stylesheet" href="lms.css?v=20261122-161">
+<link rel="stylesheet" href="lms.css?v=20261122-170">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
-  <script defer src="lms.js?v=20261122-161"></script>
+  <script defer src="lms.js?v=20261122-170"></script>
 </head>
 <body>
 
@@ -1585,7 +1585,7 @@ p,li,.chat-bubble { text-wrap:pretty; }
 
 <section id="ap-lms-app" hidden style="display:none" aria-label="Cổng học sinh An Phúc">
   <div class="lms-container">
-    <header class="lms-topbar"><div class="lms-brand"><img src="logo.jpg" alt="Logo Trung tâm Toán An Phúc"><div><h1>TRUNG TÂM TOÁN AN PHÚC</h1><p>Vững kiến thức. Chắc tương lai.</p></div></div><div class="lms-bar-actions"><button class="lms-btn ghost" type="button" onclick="apLmsExit()"><i class="bi bi-house"></i> Trang chính</button><button class="lms-btn ghost" type="button" onclick="apLmsLogout()"><i class="bi bi-box-arrow-right"></i> Đổi HS</button></div></header>
+    <header class="lms-topbar"><div class="lms-brand"><img src="logo.jpg" alt="Logo Trung tâm Toán An Phúc"><div><h1>TRUNG TÂM TOÁN AN PHÚC</h1><p>Vững kiến thức. Chắc tương lai.</p></div></div><div class="lms-bar-actions"><button class="lms-btn ghost lms-sound-toggle" id="ap-lms-sound-toggle" type="button" onclick="apLmsToggleSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh của LMS"><i class="bi bi-volume-mute"></i> Âm thanh: Tắt</button><button class="lms-btn ghost" type="button" onclick="apLmsExit()"><i class="bi bi-house"></i> Trang chính</button><button class="lms-btn ghost" type="button" onclick="apLmsLogout()"><i class="bi bi-box-arrow-right"></i> Đổi HS</button></div></header>
     <div id="ap-lms-message" class="lms-error" role="alert" hidden></div>
     <section id="ap-lms-login" class="lms-card lms-login">
       <div class="lms-hero"><div class="lms-hero-icon"><i class="bi bi-mortarboard-fill"></i></div><div><h2>Đăng nhập học sinh</h2><p>Nhập tên, chọn đúng học sinh và xác minh số điện thoại như cổng Phụ huynh.</p></div></div>
@@ -2446,7 +2446,7 @@ Trung tâm chân thành cảm ơn sự quan tâm, phối hợp và đồng hành
   // ============================================
   // CẤU HÌNH API - LIÊN KẾT VỚI GOOGLE SHEET
   // ============================================
-  const API_URL = "https://script.google.com/macros/s/AKfycbw0L5RchxQ6e-35Ky9KuFwoDBh5JP0PwjHgn0NagGD6Np8HgmKn5zhKXiJfHNSjAPcAuw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbyC783tvD2lSoQw2e0b6AumgURCRQ5m8z3lkJVI3s6TtuLeILsAJTob3V9TTGUzgdzssA/exec";
   const FRONTEND_VERSION = 'V4.27';
   const CENTER_INFO = {
     address: '30/11D Phước Tường, Phước Long, Nam Nha Trang',
